@@ -1,35 +1,47 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+function MyButton() {
+  return <button className="button-san">私はボタンさん。33歳。よろしく</button>;
+}
 
-function App() {
-  const [count, setCount] = useState(0);
-
+// `export default`はファイル内のメインコンポーネントを指定
+// 実行方法はどうするの？
+export default function MyApp() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <h1>Welcome to my App</h1>
+      <MyButton />
+      <AboutPage />
+    </div>
   );
 }
 
-export default App;
+function AboutPage() {
+  return (
+    <div>
+      <h1>About</h1>
+      <p>
+        こんにちは
+        <br />
+        お天気いいですよね☺️
+      </p>
+    </div>
+  );
+}
+
+// function isLoggedInFanc() {
+//   let content;
+//   let isLoggedIn = false;
+//   if (isLoggedIn) {
+//     content = <AdminPanel />;
+//   } else {
+//     content = <LoginForm />;
+//   }
+//   return <div>{content}</div>;
+// }
+
+// // 条件？演算子を使用したバージョン
+// <div>{isLoggedIn ? <AdminPanel /> : <LoginForm />}</div>;
+
+// // elseがいらないバージョン
+// <div>
+//   isLoggedIn && <AdminPanel />
+// </div>;
