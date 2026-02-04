@@ -20,10 +20,6 @@ function Square({ value, onSquareClick }) {
 //コンポーネントとは UI の部品を表す再利用可能なコードのこと
 // 子コンポーネントの独立したstateたちからデータを収集したいときは、親のコンポーネントさんに知らせる
 function Board({ xIsNext, squares, onPlay }) {
-  const [xIsNext, setXIsNext] = useState(true);
-  // state変数としてsquaresを用意。
-  // 変更されるたびにUIを更新するものを管理するときに使う
-  const [squares, setSquares] = useState(Array(9).fill(null));
   console.log("squares:", squares);
   console.log("BoardがReactに呼び出されました");
 
@@ -40,10 +36,9 @@ function Board({ xIsNext, squares, onPlay }) {
     } else {
       nextSquares[i] = "O";
     }
+    // TODO: なぜonPlay関数を使用するの？
     // setSquaresでsquaresがnextSquaresの値に更新することを知らせる→Bordコンポーネントが再レンダーされる
-    setSquares(nextSquares);
-    // xIsNextを反転させてfalseになる→次は相手の版になる
-    setXIsNext(!xIsNext);
+    onPlay(nextSquares);
   }
   const winner = calculateWinner(squares);
   let status;
@@ -85,10 +80,47 @@ export default function Game() {
   const [xIsNext, setXIsNext] = useState(true);
   // 着手の履歴を確認するためのstate
   // ! historyは盤面の履歴全てが配列の中に残っている。初期値はインデックス0になる→最初はインデックス0のみの配列
-  const [history, setHistory] = useState(Array(9).fill(null));
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  // 現在のターンを確認するためのstate変数
+  const [currentMove, setCurrentMove] = usestate(0);
+  // state変数としてsquaresを用意。
+  // 変更されるたびにUIを更新するものを管理するときに使う
   const currentSquares = history[history.length - 1];
-  //  TODO: これはどうしてやるのか？巻き戻し機能に必要なの？
-  function handlePlay(nextSquares) {}
+  // 盤面とターンを更新するための処理
+  function handlePlay(nextSquares) {
+    // 新しい盤面を履歴に追加するためにスプレッド構文を使用して末尾に追加する
+    setHistory([...history, nextSquares]);
+    // 次のターンにするために真偽値を反転させる
+    setXIsNext(!xIsNext);
+  }
+  // nextMoveは戻りたい盤面の配列のインデックス
+  // 初期値が0なだけで、nextMoveに0が入ることもある
+  function jumpTo(nextMove) {
+    setCurrentMove(nextMove);
+    // ! currentMove を変更する数値が偶数の場合は、xIsNext を true に設定する
+    // なぜなら、最初のターン（0回目、偶数）はXと決まっているから！
+    setXIsNext(nextMove % 2 === 0);
+  }
+  // history配列から一つずつ要素を取得してsquaresに渡す。その時のインデックスはmoveにわたす
+  // moves配列を作成してボタンを作成する
+
+  const moves = history.map((squares, move) => {
+    let description;
+    // 配列のインデックスが0より大きかったら移動する場所を渡す
+    if (move > 0) {
+      description = `# ${move} に移動してね`;
+    } else {
+      // その他（初期値）だったら「ゲームスタートに行く」を表示する
+      description = `ゲームスタートに行く`;
+    }
+    return (
+      // 配列でli要素を作成した時は一意に識別する文字列または数値のkeyが必要
+      <li key={move}>
+        {/* TODO: ボタンの背景色はどこで指定している？ */}
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
   return (
     <div className="game">
       {/* game-board */}
@@ -100,7 +132,7 @@ export default function Game() {
       </div>
       {/* game-infoを表示する */}
       <div className="game-info">
-        <ol></ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   );
