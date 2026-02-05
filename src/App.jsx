@@ -3,8 +3,7 @@
 import { useState } from "react";
 // valueはpropsのvalueプロパティの値を使うための分割代入したやつ
 function Square({ value, onSquareClick }) {
-  // TODO: ボタンをクリックすると、時々2回このコンソールが実行される時があるのはなぜ？！
-  console.log("Squareが呼び出されました");
+  // console.log("Squareが呼び出されました");
   return (
     // onClickはReact が解釈する「props名」
     // {handleClick}は、JSの関数handleClickをクリックしたときに React が呼び出すために値として渡せるように書いている
@@ -25,7 +24,7 @@ function Board({ xIsNext, squares, onPlay }) {
 
   // JSはクロージャをサポートしているからsquaresたち（Board関数で定義された変数）を参照することができる
   function handleClick(i) {
-    if (squares[i] || calculateWinner(squares)) {
+    if (calculateWinner(squares) || squares[i]) {
       return;
     }
     // squares.slice()で新しい配列を作成
@@ -36,7 +35,8 @@ function Board({ xIsNext, squares, onPlay }) {
     } else {
       nextSquares[i] = "O";
     }
-    // TODO: なぜonPlay関数を使用するの？
+    //
+    // TODO: なぜonPlay関数を使用するの？→Board は「クリックされた」という事実を onPlay で親に通知したいらしい（これがわからない）
     // setSquaresでsquaresがnextSquaresの値に更新することを知らせる→Bordコンポーネントが再レンダーされる
     onPlay(nextSquares);
   }
@@ -87,7 +87,7 @@ export default function Game() {
   // 変更されるたびにUIを更新するものを管理するときに使う
   // currentMoveのインデックスで履歴を指定することで、移動した先のBoardを表示できる！
   const currentSquares = history[currentMove];
-  // 盤面とターンを更新するための処理
+  // 盤面の履歴とターンを更新するための処理
   function handlePlay(nextSquares) {
     // 現在の盤面までの配列に新しい盤面の配列（nextHistory）を末尾に追加
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
@@ -104,6 +104,7 @@ export default function Game() {
   // history配列から一つずつ要素を取得してsquaresに渡す。その時のインデックスはmoveにわたす
   // moves配列を作成してボタンを作成する
 
+  // squaresは必要？→第2引数を設定したくて、第一引数は必須で書く必要があるから
   const moves = history.map((squares, move) => {
     let description;
     // 配列のインデックスが0より大きかったら移動する場所を渡す
@@ -116,7 +117,7 @@ export default function Game() {
     return (
       // 配列でli要素を作成した時は一意に識別する文字列または数値のkeyが必要
       <li key={move}>
-        {/* TODO: ボタンの背景色はどこで指定している？ */}
+        {/* ボタンの背景色はデフォルトだった */}
         <button onClick={() => jumpTo(move)}>{description}</button>
       </li>
     );
@@ -125,9 +126,9 @@ export default function Game() {
     <div className="game">
       {/* game-board */}
       <div className="game-board">
-        {/* TODO: Boardを呼び出す？レンダーする？ */}
-        {/* TODO: currentSquaresを渡す理由は？ */}
-        {/* TODO: handlePlayの引数を渡さなきゃ！ */}
+        {/* Boardをレンダーしている */}
+        {/* currentSquaresを渡す理由は？→状態管理しているGameのstateが更新されたら盤面描画専用のBoardコンポーネントさんに渡したいから！ */}
+        {/* handlePlayの引数はなぜ渡さないの？→ 関数の定義を渡したいだけだから。実行するときには引数をつけて呼べるよん */}
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       {/* game-infoを表示する */}
@@ -138,6 +139,11 @@ export default function Game() {
   );
 }
 
+/**
+ * 勝者がいるかどうかを確認するための処理
+ * @param {Array} squares
+ * @returns
+ */
 function calculateWinner(squares) {
   // 揃ったら勝ちになる配列のインデックス
   const lines = [
