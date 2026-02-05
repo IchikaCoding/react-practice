@@ -76,30 +76,30 @@ function Board({ xIsNext, squares, onPlay }) {
 
 // export defaultによって、index.jsxがこのGameコンポーネントをトップレベルとして使用する
 export default function Game() {
-  // 手番の確認のためのstate
-  const [xIsNext, setXIsNext] = useState(true);
   // 着手の履歴を確認するためのstate
   // ! historyは盤面の履歴全てが配列の中に残っている。初期値はインデックス0になる→最初はインデックス0のみの配列
   const [history, setHistory] = useState([Array(9).fill(null)]);
   // 現在のターンを確認するためのstate変数
-  const [currentMove, setCurrentMove] = usestate(0);
+  const [currentMove, setCurrentMove] = useState(0);
+  // currentMoveが偶数か奇数かによってターンを決定できる→その判定の真偽値でターン決めする
+  const xIsNext = currentMove % 2 === 0;
   // state変数としてsquaresを用意。
   // 変更されるたびにUIを更新するものを管理するときに使う
-  const currentSquares = history[history.length - 1];
+  // currentMoveのインデックスで履歴を指定することで、移動した先のBoardを表示できる！
+  const currentSquares = history[currentMove];
   // 盤面とターンを更新するための処理
   function handlePlay(nextSquares) {
-    // 新しい盤面を履歴に追加するためにスプレッド構文を使用して末尾に追加する
-    setHistory([...history, nextSquares]);
-    // 次のターンにするために真偽値を反転させる
-    setXIsNext(!xIsNext);
+    // 現在の盤面までの配列に新しい盤面の配列（nextHistory）を末尾に追加
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    // その配列で新しい履歴として更新する
+    setHistory(nextHistory);
+    // ターンの数はnextHistory配列の要素数からインデックスを計算して算出
+    setCurrentMove(nextHistory.length - 1);
   }
   // nextMoveは戻りたい盤面の配列のインデックス
   // 初期値が0なだけで、nextMoveに0が入ることもある
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
-    // ! currentMove を変更する数値が偶数の場合は、xIsNext を true に設定する
-    // なぜなら、最初のターン（0回目、偶数）はXと決まっているから！
-    setXIsNext(nextMove % 2 === 0);
   }
   // history配列から一つずつ要素を取得してsquaresに渡す。その時のインデックスはmoveにわたす
   // moves配列を作成してボタンを作成する
