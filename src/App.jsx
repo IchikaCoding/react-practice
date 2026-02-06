@@ -52,10 +52,27 @@ function Board({ xIsNext, squares, onPlay }) {
   return (
     <>
       <div className="status">{status}</div>
-      <div className="board-row">
-        {/* BoardコンポーネントがSquareコンポーネントをレンダーしている */}
-        {/* Squareコンポーネントの引数に2つの値を渡しているだけ */}
-        {/* {handleClick}がonSquareClickに入る→Squareのボタンを押されたときの処理として{handleClick}がわたる！ */}
+      {/* 行の列の作成 */}
+      {[0, 1, 2].map((row) => {
+        return (
+          <div className="board-row" key={row}>
+            {[0, 1, 2].map((column) => {
+              return (
+                <Square
+                  value={squares[row * 3 + column]}
+                  key={row * 3 + column}
+                  onSquareClick={() => handleClick(row * 3 + column)}
+                />
+              );
+            })}
+          </div>
+        );
+      })}
+      {/* その一つずつの要素に対して、<div className="board-row">を作成する */}
+      {/* BoardコンポーネントがSquareコンポーネントをレンダーしている */}
+      {/* Squareコンポーネントの引数に2つの値を渡しているだけ */}
+      {/* {handleClick}がonSquareClickに入る→Squareのボタンを押されたときの処理として{handleClick}がわたる！ */}
+      {/* <div className="board-row">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
         <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
         <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
@@ -69,7 +86,7 @@ function Board({ xIsNext, squares, onPlay }) {
         <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
         <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-      </div>
+      </div> */}
     </>
   );
 }
