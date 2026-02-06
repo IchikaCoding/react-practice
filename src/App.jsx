@@ -55,24 +55,31 @@ function Board({ xIsNext, squares, onPlay }) {
       {/* 行の列の作成 */}
       {[0, 1, 2].map((row) => {
         return (
+          // 行を作成する
           <div className="board-row" key={row}>
+            {/* 1行できた中に列を作成する */}
             {[0, 1, 2].map((column) => {
+              const index = row * 3 + column;
               return (
                 <Square
-                  value={squares[row * 3 + column]}
-                  key={row * 3 + column}
-                  onSquareClick={() => handleClick(row * 3 + column)}
+                  value={squares[index]}
+                  key={index}
+                  onSquareClick={() => handleClick(index)}
                 />
               );
             })}
           </div>
         );
       })}
-      {/* その一つずつの要素に対して、<div className="board-row">を作成する */}
-      {/* BoardコンポーネントがSquareコンポーネントをレンダーしている */}
-      {/* Squareコンポーネントの引数に2つの値を渡しているだけ */}
-      {/* {handleClick}がonSquareClickに入る→Squareのボタンを押されたときの処理として{handleClick}がわたる！ */}
-      {/* <div className="board-row">
+    </>
+  );
+}
+// {/* その一つずつの要素に対して、<div className="board-row">を作成する */}
+// {/* BoardコンポーネントがSquareコンポーネントをレンダーしている */}
+// {/* Squareコンポーネントの引数に2つの値を渡しているだけ */}
+// {/* {handleClick}がonSquareClickに入る→Squareのボタンを押されたときの処理として{handleClick}がわたる！ */}
+{
+  /* <div className="board-row">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
         <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
         <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
@@ -86,9 +93,7 @@ function Board({ xIsNext, squares, onPlay }) {
         <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
         <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
         <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-      </div> */}
-    </>
-  );
+      </div> */
 }
 
 // export defaultによって、index.jsxがこのGameコンポーネントをトップレベルとして使用する
@@ -98,12 +103,15 @@ export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   // 現在のターンを確認するためのstate変数
   const [currentMove, setCurrentMove] = useState(0);
+  // 昇順と降順を管理するためのstate変数
+  const [orderIsNext, setOrderIsNext] = useState(false);
   // currentMoveが偶数か奇数かによってターンを決定できる→その判定の真偽値でターン決めする
   const xIsNext = currentMove % 2 === 0;
   // state変数としてsquaresを用意。
   // 変更されるたびにUIを更新するものを管理するときに使う
   // currentMoveのインデックスで履歴を指定することで、移動した先のBoardを表示できる！
   const currentSquares = history[currentMove];
+
   // 盤面の履歴とターンを更新するための処理
   function handlePlay(nextSquares) {
     // 現在の盤面までの配列に新しい盤面の配列（nextHistory）を末尾に追加
@@ -118,9 +126,9 @@ export default function Game() {
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
   }
+
   // history配列から一つずつ要素を取得してsquaresに渡す。その時のインデックスはmoveにわたす
   // moves配列を作成してボタンを作成する
-
   // squaresは必要？→第2引数を設定したくて、第一引数は必須で書く必要があるから
   const moves = history.map((squares, move) => {
     let description;
@@ -144,6 +152,31 @@ export default function Game() {
       </li>
     );
   });
+  const reversedMoves = history.toReversed().map((squares, move) => {
+    let description;
+    // 配列のインデックスが0より大きかったら移動する場所を渡す
+    if (move > 0) {
+      description = `# ${move} に移動してね`;
+    } else {
+      // その他（初期値）だったら「ゲームスタートに行く」を表示する
+      description = `ゲームスタートに行く`;
+    }
+    return (
+      // 配列でli要素を作成した時は一意に識別する文字列または数値のkeyが必要
+      <li key={move}>
+        {/* 条件分岐を三項演算子で書いてみる */}
+        {move === currentMove ? (
+          <span>{description}</span>
+        ) : (
+          <button onClick={() => jumpTo(move)}>{description}</button>
+        )}
+        {/* ボタンの背景色はデフォルトだった */}
+      </li>
+    );
+  });
+  console.log("moves ", moves);
+  console.log("reversedMoves ", reversedMoves);
+
   return (
     <div className="game">
       {/* game-board */}
@@ -155,7 +188,15 @@ export default function Game() {
       </div>
       {/* game-infoを表示する */}
       <div className="game-info">
-        <ol>{moves}</ol>
+        <button
+          onClick={() => {
+            setOrderIsNext(!orderIsNext);
+            // console.log(orderIsNext);
+          }}
+        >
+          並べ替えボタン
+        </button>
+        {orderIsNext ? <ol>{moves}</ol> : <ol reversed>{reversedMoves}</ol>}
       </div>
     </div>
   );
