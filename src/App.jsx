@@ -117,10 +117,13 @@ export default function Game() {
     return (
       // 配列でli要素を作成した時は一意に識別する文字列または数値のkeyが必要
       <li key={move}>
-        {/* TODO: 条件分岐がJSX内で書けない！（2026-02-05） */}
-        if ({move}==={currentMove}) {console.log()}
+        {/* 条件分岐を三項演算子で書いてみる */}
+        {move === currentMove ? (
+          <span>{description}</span>
+        ) : (
+          <button onClick={() => jumpTo(move)}>{description}</button>
+        )}
         {/* ボタンの背景色はデフォルトだった */}
-        <button onClick={() => jumpTo(move)}>{description}</button>
       </li>
     );
   });
