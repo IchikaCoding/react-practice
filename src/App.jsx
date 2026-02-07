@@ -152,23 +152,28 @@ export default function Game() {
       </li>
     );
   });
+  // historyをリバースさせて、一つずつの要素ごとに処理をして reversedMoves に代入する
+  // moveはリバースさせた配列のインデックス→中身とインデックスはズレた状態
   const reversedMoves = history.toReversed().map((squares, move) => {
     let description;
+    // インデックス最大値-move をすることで、中身とズレたインデックスを修正する
+    // この計算をすることによって、条件分岐の処理を変えなくてもOKになった
+    const newMove = history.length - 1 - move;
     // 配列のインデックスが0より大きかったら移動する場所を渡す
-    if (move > 0) {
-      description = `# ${move} に移動してね`;
+    if (newMove > 0) {
+      description = `# ${newMove} に移動してね`;
     } else {
-      // その他（初期値）だったら「ゲームスタートに行く」を表示する
+      // その他（初期値はインデックス0）だったら「ゲームスタートに行く」を表示する
       description = `ゲームスタートに行く`;
     }
     return (
       // 配列でli要素を作成した時は一意に識別する文字列または数値のkeyが必要
-      <li key={move}>
+      <li key={newMove}>
         {/* 条件分岐を三項演算子で書いてみる */}
-        {move === currentMove ? (
+        {newMove === currentMove ? (
           <span>{description}</span>
         ) : (
-          <button onClick={() => jumpTo(move)}>{description}</button>
+          <button onClick={() => jumpTo(newMove)}>{description}</button>
         )}
         {/* ボタンの背景色はデフォルトだった */}
       </li>
