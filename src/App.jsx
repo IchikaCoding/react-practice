@@ -9,7 +9,11 @@ function Square({ value, onSquareClick }) {
     // {handleClick}は、JSの関数handleClickをクリックしたときに React が呼び出すために値として渡せるように書いている
     // {}はJSXのなかでJSを書くため
     // classNameもReactが解釈するためのprop名
-    <button className="square" onClick={onSquareClick}>
+    <button
+      className="square"
+      onClick={onSquareClick}
+      style={{ backgroundColor: "skyblue" }}
+    >
       {/* JSのSquare関数の引数valueをJSX内で使うために{}でvalueを囲んでいる */}
       {value}
     </button>
@@ -40,7 +44,9 @@ function Board({ xIsNext, squares, onPlay }) {
     // setSquaresでsquaresがnextSquaresの値に更新することを知らせる→Bordコンポーネントが再レンダーされる
     onPlay(nextSquares);
   }
-  const winner = calculateWinner(squares);
+  // ◯か✘がわたる
+  const winner = calculateWinner(squares).winner;
+  // console.log("winner", winner);
   let status;
   // winnerがいるならそれをstatusに表示する
   if (winner) {
@@ -230,7 +236,10 @@ function calculateWinner(squares) {
     const [a, b, c] = lines[i];
     // このsquaresのインデックスの値が全部一緒だったらsquares[a]（ex. "X"など）が勝者になる
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      // 配列のインデックスを返す
+      // lineはどのマスなのかを知らせるため
+      // winnerは◯なのか✘なのかを知らせるため
+      return { line: [a, b, c], winner: squares[a] };
     }
   }
   // 勝者がいなかった場合は、nullを返す
