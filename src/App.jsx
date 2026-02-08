@@ -2,7 +2,7 @@
 // react が exports している useState という名前のものを取り出して読み込むための{}
 import { useState } from "react";
 // valueはpropsのvalueプロパティの値を使うための分割代入したやつ
-function Square({ value, onSquareClick }) {
+function Square({ value, onSquareClick, colorInfo }) {
   // console.log("Squareが呼び出されました");
   return (
     // onClickはReact が解釈する「props名」
@@ -12,7 +12,7 @@ function Square({ value, onSquareClick }) {
     <button
       className="square"
       onClick={onSquareClick}
-      style={{ backgroundColor: "skyblue" }}
+      style={{ backgroundColor: colorInfo }}
     >
       {/* JSのSquare関数の引数valueをJSX内で使うために{}でvalueを囲んでいる */}
       {value}
@@ -23,17 +23,26 @@ function Square({ value, onSquareClick }) {
 //コンポーネントとは UI の部品を表す再利用可能なコードのこと
 // 子コンポーネントの独立したstateたちからデータを収集したいときは、親のコンポーネントさんに知らせる
 function Board({ xIsNext, squares, onPlay }) {
+  const { winner, line } = calculateWinner(squares);
   console.log("squares:", squares);
   console.log("BoardがReactに呼び出されました");
-
+  console.log("line", line);
   // JSはクロージャをサポートしているからsquaresたち（Board関数で定義された変数）を参照することができる
+  /**
+   * Boardのマス目の配列を更新する処理→あとからhandlePlayに更新させた値を渡す
+   * @param {number} i マス目のindex
+   * @returns
+   */
   function handleClick(i) {
-    if (calculateWinner(squares) || squares[i]) {
+    // 勝者がいるか、マス目に入力があったら早期リターンする
+    // calculateWinner(squares)で判定すると勝者いなくてもオブジェクト返ってきて常にtruthyになるから気をつけて
+    if (winner || squares[i]) {
       return;
     }
     // squares.slice()で新しい配列を作成
     // 新しい配列で更新してからその配列をsquaresにいれるという流れで直接squaresを更新することを避けれた！
     const nextSquares = squares.slice();
+    // xIsNextがtrueだったらクリックしたマス目に✘、falseだったら◯をいれる
     if (xIsNext) {
       nextSquares[i] = "X";
     } else {
@@ -44,10 +53,9 @@ function Board({ xIsNext, squares, onPlay }) {
     // setSquaresでsquaresがnextSquaresの値に更新することを知らせる→Bordコンポーネントが再レンダーされる
     onPlay(nextSquares);
   }
-  // ◯か✘がわたる
-  const winner = calculateWinner(squares).winner;
-  // console.log("winner", winner);
+
   let status;
+
   // winnerがいるならそれをstatusに表示する
   if (winner) {
     status = `Winner: ${winner}`;
@@ -71,6 +79,8 @@ function Board({ xIsNext, squares, onPlay }) {
                   value={squares[index]}
                   key={index}
                   onSquareClick={() => handleClick(index)}
+                  // TODO: lineがnullのときはどうある？
+                  colorInfo={line?.includes(index) ? "skyblue" : null}
                 />
               );
             })}
@@ -243,5 +253,5 @@ function calculateWinner(squares) {
     }
   }
   // 勝者がいなかった場合は、nullを返す
-  return null;
+  return { line: null, winner: null };
 }
