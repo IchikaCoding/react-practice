@@ -92,27 +92,6 @@ function Board({ xIsNext, squares, onPlay }) {
     </>
   );
 }
-// {/* その一つずつの要素に対して、<div className="board-row">を作成する */}
-// {/* BoardコンポーネントがSquareコンポーネントをレンダーしている */}
-// {/* Squareコンポーネントの引数に2つの値を渡しているだけ */}
-// {/* {handleClick}がonSquareClickに入る→Squareのボタンを押されたときの処理として{handleClick}がわたる！ */}
-{
-  /* <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-      </div> */
-}
 
 // export defaultによって、index.jsxがこのGameコンポーネントをトップレベルとして使用する
 export default function Game() {
@@ -129,7 +108,7 @@ export default function Game() {
   // 変更されるたびにUIを更新するものを管理するときに使う
   // currentMoveのインデックスで履歴を指定することで、移動した先のBoardを表示できる！
   const currentSquares = history[currentMove];
-
+  console.log("history", history);
   // 盤面の履歴とターンを更新するための処理
   function handlePlay(nextSquares) {
     // 現在の盤面までの配列に新しい盤面の配列（nextHistory）を末尾に追加
@@ -152,7 +131,13 @@ export default function Game() {
     let description;
     // 配列のインデックスが0より大きかったら移動する場所を渡す
     if (move > 0) {
-      description = `# ${move} に移動してね`;
+      squares.map((element, i) => {
+        if (element) {
+          const row = Math.floor(i / 3);
+          const col = i % 3;
+          description = `# (${row},${col}) に移動してね`;
+        }
+      });
     } else {
       // その他（初期値）だったら「ゲームスタートに行く」を表示する
       description = `ゲームスタートに行く`;
