@@ -59,9 +59,11 @@ function Board({ xIsNext, squares, onPlay }) {
   // winnerがいるならそれをstatusに表示する
   if (winner) {
     status = `Winner: ${winner}`;
-  } else {
+  } else if (squares.includes(null)) {
     // そうじゃないならNextPlayerをstatusに表示する
     status = `Next Player: ${xIsNext ? "X" : "O"}`;
+  } else {
+    status = "引き分け";
   }
   return (
     <>
