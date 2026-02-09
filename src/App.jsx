@@ -48,10 +48,14 @@ function Board({ xIsNext, squares, onPlay }) {
     } else {
       nextSquares[i] = "O";
     }
-    //
+    // TODO: onPlayに渡すオブジェクトを作成する
+    // インデックスから行と列を計算して算出
+    const row = Math.floor(i / 3);
+    const col = i % 3;
+    const location = { row, col };
     // TODO: なぜonPlay関数を使用するの？→Board は「クリックされた」という事実を onPlay で親に通知したいらしい（これがわからない）
     // setSquaresでsquaresがnextSquaresの値に更新することを知らせる→Bordコンポーネントが再レンダーされる
-    onPlay(nextSquares);
+    onPlay(nextSquares, location);
   }
 
   let status;
@@ -102,6 +106,8 @@ export default function Game() {
   const [currentMove, setCurrentMove] = useState(0);
   // 昇順と降順を管理するためのstate変数
   const [orderIsNext, setOrderIsNext] = useState(false);
+  // クリックされたマス目を管理するためのstate変数
+  const [locations, setLocations] = useState([null]);
   // currentMoveが偶数か奇数かによってターンを決定できる→その判定の真偽値でターン決めする
   const xIsNext = currentMove % 2 === 0;
   // state変数としてsquaresを用意。
@@ -109,14 +115,18 @@ export default function Game() {
   // currentMoveのインデックスで履歴を指定することで、移動した先のBoardを表示できる！
   const currentSquares = history[currentMove];
   console.log("history", history);
+  // TODO: ここも修正する！！！！！！！！！！！！！！
   // 盤面の履歴とターンを更新するための処理
-  function handlePlay(nextSquares) {
+  function handlePlay(nextSquares, location) {
     // 現在の盤面までの配列に新しい盤面の配列（nextHistory）を末尾に追加
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     // その配列で新しい履歴として更新する
     setHistory(nextHistory);
     // ターンの数はnextHistory配列の要素数からインデックスを計算して算出
     setCurrentMove(nextHistory.length - 1);
+    const newLocation = [...locations.slice(0, currentMove + 1), location];
+    setLocations(newLocation);
+    console.log("newLocation", newLocation);
   }
   // nextMoveは戻りたい盤面の配列のインデックス
   // 初期値が0なだけで、nextMoveに0が入ることもある
@@ -124,20 +134,15 @@ export default function Game() {
     setCurrentMove(nextMove);
   }
 
+  // TODO: ここでインデックスを計算していると大変→handleClickに移動する
   // history配列から一つずつ要素を取得してsquaresに渡す。その時のインデックスはmoveにわたす
   // moves配列を作成してボタンを作成する
   // squaresは必要？→第2引数を設定したくて、第一引数は必須で書く必要があるから
-  const moves = history.map((squares, move) => {
+  const moves = history.map((square, move) => {
     let description;
     // 配列のインデックスが0より大きかったら移動する場所を渡す
     if (move > 0) {
-      squares.map((element, i) => {
-        if (element) {
-          const row = Math.floor(i / 3);
-          const col = i % 3;
-          description = `# (${row},${col}) に移動してね`;
-        }
-      });
+      description = `(${locations[move].row},${locations[move].col})に移動してね`;
     } else {
       // その他（初期値）だったら「ゲームスタートに行く」を表示する
       description = `ゲームスタートに行く`;
@@ -164,7 +169,7 @@ export default function Game() {
     const newMove = history.length - 1 - move;
     // 配列のインデックスが0より大きかったら移動する場所を渡す
     if (newMove > 0) {
-      description = `# ${newMove} に移動してね`;
+      description = `(${locations[newMove].row},${locations[newMove].col})に移動してね`;
     } else {
       // その他（初期値はインデックス0）だったら「ゲームスタートに行く」を表示する
       description = `ゲームスタートに行く`;
