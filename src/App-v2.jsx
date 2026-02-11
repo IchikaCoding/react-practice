@@ -1,38 +1,92 @@
 import { useState } from "react";
 
+// モックデータ
+const PRODUCTS = [
+  { category: "Fruits", price: "$1", stocked: true, name: "Apple" },
+  { category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit" },
+  { category: "Fruits", price: "$2", stocked: false, name: "Passionfruit" },
+  { category: "Vegetables", price: "$2", stocked: true, name: "Spinach" },
+  { category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin" },
+  { category: "Vegetables", price: "$1", stocked: true, name: "Peas" },
+];
+
 /**
- * カテゴリを一つずつ表示するコンポーネント
- *
- * @param {string} category
+ * FilterableProductTableがトップレベルのコンポーネント
+ * propsとして{PRODUCTS}を渡している
  * @returns
  */
-function ProductCategoryRow({ category }) {
-  return (
-    <tr>
-      {/* colSpanは、列を横向きに結合できるもの。今回でいうと、2列を一つのセルとして結合している */}
-      <th colSpan="2">{category}</th>
-    </tr>
-  );
+export default function App() {
+  // JSXの中でJSを書くために｛｝で囲む
+  return <FilterableProductTable products={PRODUCTS} />;
 }
+
 /**
- * 商品を一つずつ表示しているコンポーネント
- * @param {Object} product Products配列が持っている一つずつのオブジェクト
+ * 検索テキストとチェックボックスの親コンポーネントだからstateはここで管理する
+ * @typedef {Object} Product
+ * @property {string} category
+ * @property {string} price
+ * @property {boolean} stocked
+ * @property {string} name
+ * @param {Product[]} products
  * @returns
  */
-function ProductRow({ product }) {
-  // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
-  const name = product.stocked ? (
-    product.name
-  ) : (
-    <span style={{ color: "red" }}>{product.name}</span>
-  );
+function FilterableProductTable({ products }) {
+  // 検索テキストのstate変数の初期値
+  const [filterText, setFilterText] = useState("");
+  const [inStockOnly, setInStockOnly] = useState(false);
 
   return (
-    // 1行に2列を表示する
-    <tr>
-      <td>{name}</td>
-      <td>{product.price}</td>
-    </tr>
+    <div>
+      {/* チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
+      {/* 関数を渡したのは入力値をもらって、その値でstateを更新したいから */}
+      <SearchBar
+        filterText={filterText}
+        inStockOnly={inStockOnly}
+        onFilterTextChange={setFilterText}
+        onInStockOnlyChange={setInStockOnly}
+      />
+      {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
+      {/* 更新された値を使えばいいだけだからstateを更新する関数は不要 */}
+      <ProductTable
+        products={products}
+        inStockOnly={inStockOnly}
+        filterText={filterText}
+      />
+    </div>
+  );
+}
+
+/**
+ * 入力するフォーム部分を描画するためのコンポーネント
+ * @returns
+ */
+function SearchBar({
+  filterText,
+  inStockOnly,
+  onFilterTextChange,
+  onInStockOnlyChange,
+}) {
+  return (
+    <form>
+      <input
+        type="text"
+        placeholder="Search..."
+        value={filterText}
+        onChange={(e) => {
+          onFilterTextChange(e.target.value);
+        }}
+      />
+      <label>
+        <input
+          type="checkbox"
+          checked={inStockOnly}
+          onChange={(e) => {
+            onInStockOnlyChange(e.target.checked);
+          }}
+        />{" "}
+        Only show products in stock
+      </label>
+    </form>
   );
 }
 
@@ -95,91 +149,37 @@ function ProductTable({ products, filterText, inStockOnly }) {
 }
 
 /**
- * 入力するフォーム部分を描画するためのコンポーネント
+ * カテゴリを一つずつ表示するコンポーネント
+ *
+ * @param {string} category
  * @returns
  */
-function SearchBar({
-  filterText,
-  inStockOnly,
-  onFilterTextChange,
-  onInStockOnlyChange,
-}) {
+function ProductCategoryRow({ category }) {
   return (
-    <form>
-      <input
-        type="text"
-        placeholder="Search..."
-        value={filterText}
-        onChange={(e) => {
-          onFilterTextChange(e.target.value);
-        }}
-      />
-      <label>
-        <input
-          type="checkbox"
-          checked={inStockOnly}
-          onChange={(e) => {
-            onInStockOnlyChange(e.target.checked);
-          }}
-        />{" "}
-        Only show products in stock
-      </label>
-    </form>
+    <tr>
+      {/* colSpanは、列を横向きに結合できるもの。今回でいうと、2列を一つのセルとして結合している */}
+      <th colSpan="2">{category}</th>
+    </tr>
   );
 }
-
 /**
- * 検索テキストとチェックボックスの親コンポーネントだからstateはここで管理する
- * @typedef {Object} Product
- * @property {string} category
- * @property {string} price
- * @property {boolean} stocked
- * @property {string} name
- * @param {Product[]} products
+ * 商品を一つずつ表示しているコンポーネント
+ * @param {Object} product Products配列が持っている一つずつのオブジェクト
  * @returns
  */
-function FilterableProductTable({ products }) {
-  // 検索テキストのstate変数の初期値
-  const [filterText, setFilterText] = useState("");
-  const [inStockOnly, setInStockOnly] = useState(false);
+function ProductRow({ product }) {
+  // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
+  const name = product.stocked ? (
+    product.name
+  ) : (
+    <span style={{ color: "red" }}>{product.name}</span>
+  );
 
   return (
-    <div>
-      {/* チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
-      {/* 関数を渡したのは入力値をもらって、その値でstateを更新したいから */}
-      <SearchBar
-        filterText={filterText}
-        inStockOnly={inStockOnly}
-        onFilterTextChange={setFilterText}
-        onInStockOnlyChange={setInStockOnly}
-      />
-      {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
-      {/* 更新された値を使えばいいだけだからstateを更新する関数は不要 */}
-      <ProductTable
-        products={products}
-        inStockOnly={inStockOnly}
-        filterText={filterText}
-      />
-    </div>
+    // 1行に2列を表示する
+    <tr>
+      <td>{name}</td>
+      <td>{product.price}</td>
+    </tr>
   );
-}
-
-// モックデータ
-const PRODUCTS = [
-  { category: "Fruits", price: "$1", stocked: true, name: "Apple" },
-  { category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit" },
-  { category: "Fruits", price: "$2", stocked: false, name: "Passionfruit" },
-  { category: "Vegetables", price: "$2", stocked: true, name: "Spinach" },
-  { category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin" },
-  { category: "Vegetables", price: "$1", stocked: true, name: "Peas" },
-];
-
-/**
- * FilterableProductTableがトップレベルのコンポーネント
- * propsとして{PRODUCTS}を渡している
- * @returns
- */
-export default function App() {
-  // JSXの中でJSを書くために｛｝で囲む
-  return <FilterableProductTable products={PRODUCTS} />;
 }
