@@ -17,7 +17,7 @@ const PRODUCTS = [
  */
 export default function App() {
   // JSXの中でJSを書くために｛｝で囲む
-  return <FilterableProductTable products={PRODUCTS} />;
+  return <FilterableProductTable />;
 }
 
 /**
@@ -30,10 +30,13 @@ export default function App() {
  * @param {Product[]} products
  * @returns
  */
-function FilterableProductTable({ products }) {
+function FilterableProductTable() {
+  // productsをstateにする
+  const [products, setProducts] = useState(PRODUCTS);
   // 検索テキストのstate変数の初期値
   const [filterText, setFilterText] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [productName, setProductName] = useState("");
 
   return (
     <div>
@@ -44,7 +47,10 @@ function FilterableProductTable({ products }) {
         inStockOnly={inStockOnly}
         onFilterTextChange={setFilterText}
         onInStockOnlyChange={setInStockOnly}
+        productName={productName}
+        onProductNameChange={setProductName}
       />
+      <AddProductForm products={products} onProductsChange={setProducts} />
       {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
       {/* 更新された値を使えばいいだけだからstateを更新する関数は不要 */}
       <ProductTable
@@ -67,25 +73,92 @@ function SearchBar({
   onInStockOnlyChange,
 }) {
   return (
+    <>
+      <form>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={filterText}
+          onChange={(e) => {
+            onFilterTextChange(e.target.value);
+          }}
+        />
+        <label>
+          <input
+            type="checkbox"
+            checked={inStockOnly}
+            onChange={(e) => {
+              onInStockOnlyChange(e.target.checked);
+            }}
+          />{" "}
+          Only show products in stock
+        </label>
+      </form>
+    </>
+  );
+}
+
+// TODO: 商品追加フォームを作成
+// ここでinputされた情報を受け取る必要がある！
+function AddProductForm({ products, onProductsChange }) {
+  // ローカルのstateを作成する
+  const [productCategory, onProductCategoryChange] = useState("");
+  const [productPrice, onProductPriceChange] = useState("");
+  const [isProductStock, onIsProductStockChange] = useState(false);
+  const [productName, onProductNameChange] = useState("");
+
+  const newProduct = {
+    category: productCategory,
+    price: productPrice,
+    stocked: isProductStock,
+    name: productName,
+  };
+  const newProducts = [...products, newProduct];
+
+  // onProductsChange(newProducts);
+  return (
     <form>
-      <input
-        type="text"
-        placeholder="Search..."
-        value={filterText}
+      {/* セレクトはどうやって入力を受け取る？ */}
+      <select
+        name="category"
+        id="category-select"
+        value={productCategory}
         onChange={(e) => {
-          onFilterTextChange(e.target.value);
+          onProductCategoryChange(e.target.value);
+        }}
+      >
+        <option value="Fruits">Fruits</option>
+        <option value="Vegetables">Vegetables</option>
+      </select>
+      <input
+        type="number"
+        value={productPrice}
+        onChange={(e) => {
+          onProductPriceChange(e.target.value);
         }}
       />
-      <label>
-        <input
-          type="checkbox"
-          checked={inStockOnly}
-          onChange={(e) => {
-            onInStockOnlyChange(e.target.checked);
-          }}
-        />{" "}
-        Only show products in stock
-      </label>
+      <input
+        type="checkbox"
+        checked={isProductStock}
+        onChange={(e) => {
+          onIsProductStockChange(e.target.checked);
+        }}
+      />
+      <input
+        type="text"
+        placeholder="Add..."
+        value={productName}
+        onChange={(e) => {
+          onProductNameChange(e.target.value);
+        }}
+      ></input>
+      <button
+        onClick={() => {
+          onProductsChange(newProducts);
+        }}
+      >
+        add product
+      </button>
     </form>
   );
 }
