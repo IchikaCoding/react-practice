@@ -2,12 +2,42 @@ import { useState } from "react";
 
 // モックデータ
 const PRODUCTS = [
-  { category: "Fruits", price: "$1", stocked: true, name: "Apple" },
-  { category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit" },
-  { category: "Fruits", price: "$2", stocked: false, name: "Passionfruit" },
-  { category: "Vegetables", price: "$2", stocked: true, name: "Spinach" },
-  { category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin" },
-  { category: "Vegetables", price: "$1", stocked: true, name: "Peas" },
+  { id: "p1", category: "Fruits", price: "$1", stocked: true, name: "Apple" },
+  {
+    id: "p2",
+    category: "Fruits",
+    price: "$1",
+    stocked: true,
+    name: "DragonFruit",
+  },
+  {
+    id: "p3",
+    category: "Fruits",
+    price: "$2",
+    stocked: false,
+    name: "PassionFruit",
+  },
+  {
+    id: "p4",
+    category: "Vegetables",
+    price: "$2",
+    stocked: true,
+    name: "Spinach",
+  },
+  {
+    id: "p5",
+    category: "Vegetables",
+    price: "$4",
+    stocked: false,
+    name: "Pumpkin",
+  },
+  {
+    id: "p6",
+    category: "Vegetables",
+    price: "$1",
+    stocked: true,
+    name: "Peas",
+  },
 ];
 
 /**
@@ -23,6 +53,7 @@ export default function App() {
 /**
  * 検索テキストとチェックボックスの親コンポーネントだからstateはここで管理する
  * @typedef {Object} Product
+ * @property {string} id
  * @property {string} category
  * @property {string} price
  * @property {boolean} stocked
@@ -104,7 +135,7 @@ function SearchBar({
 function AddProductForm({ products, onProductsChange }) {
   // ローカルのstateを作成する
   // TODO: カテゴリの初期値ってfruitとか入れておくほうがいいのかな？
-  const [productCategory, onProductCategoryChange] = useState("");
+  const [productCategory, onProductCategoryChange] = useState("Fruits");
   const [productPrice, onProductPriceChange] = useState("");
   const [isProductStock, onIsProductStockChange] = useState(false);
   const [productName, onProductNameChange] = useState("");
@@ -114,11 +145,13 @@ function AddProductForm({ products, onProductsChange }) {
     // 再描画を防ぐ
     e.preventDefault();
     const newProduct = {
+      id: crypto.randomUUID(),
       category: productCategory,
       price: `$${productPrice}`,
       stocked: isProductStock,
       name: productName,
     };
+
     const newProducts = [...products, newProduct];
     onProductsChange(newProducts);
   }
@@ -136,6 +169,7 @@ function AddProductForm({ products, onProductsChange }) {
       >
         <option value="Fruits">Fruits</option>
         <option value="Vegetables">Vegetables</option>
+        <option value="Snacks">Snacks</option>
       </select>
       <input
         type="number"
@@ -167,6 +201,7 @@ function AddProductForm({ products, onProductsChange }) {
 /**
  * 商品を表示する部分の描画を担当しているコンポーネント
  * @typedef {Object} Product
+ * @property {string} id
  * @property {string} category
  * @property {string} price
  * @property {boolean} stocked
@@ -179,8 +214,13 @@ function ProductTable({ products, filterText, inStockOnly }) {
   const rows = [];
   // カテゴリが変わったことを判定するための変数
   let lastCategory = null;
+  // TODO: productsの手前でカテゴリ順に並び替えること
+  const newProducts = products.toSorted((a, b) =>
+    a.category.localeCompare(b.category),
+  );
+  console.log("newProducts", newProducts);
   // forEachは配列の要素一つずつに指定した処理をするメソッド
-  products.forEach((product) => {
+  newProducts.forEach((product) => {
     // 商品の名前を全部小文字にしたものと、検索したい文字として入力された小文字文字列が一致しない場合はリターンする処理
     // indexOf()は文字列と検索したい文字列が一致しなかったら-1を返すメソッド
     if (product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
@@ -203,7 +243,7 @@ function ProductTable({ products, filterText, inStockOnly }) {
       );
     }
     // 商品を表示するためのコンポーネントを配列に追加
-    rows.push(<ProductRow product={product} key={product.name} />);
+    rows.push(<ProductRow product={product} key={product.id} />);
     lastCategory = product.category;
     console.log("lastCategory", lastCategory);
   });
