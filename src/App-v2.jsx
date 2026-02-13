@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+// ローカルストレージのキー名の定義
+const PRODUCTS_KEY = "productsKey";
 // モックデータ
 const PRODUCTS = [
   { id: "p1", category: "Fruits", price: "$1", stocked: true, name: "Apple" },
@@ -64,7 +66,15 @@ export default function App() {
 function FilterableProductTable() {
   // productsをstateにする
   // リロードされると、またモックデータで初期化される
-  const [products, setProducts] = useState(PRODUCTS);
+  const [products, setProducts] = useState(() => {
+    // 初回表示時にlocalStorageを確認する
+    const storageProducts = localStorage.getItem(PRODUCTS_KEY);
+    if (storageProducts === null) {
+      return PRODUCTS;
+    }
+    // TODO: ここから途中です
+    // モックデータが入っていた場合のproductsのstateは何にするかを書きましょう♪
+  });
   // 検索テキストのstate変数の初期値
   const [filterText, setFilterText] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
