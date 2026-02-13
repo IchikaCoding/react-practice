@@ -32,6 +32,7 @@ export default function App() {
  */
 function FilterableProductTable() {
   // productsをstateにする
+  // リロードされると、またモックデータで初期化される
   const [products, setProducts] = useState(PRODUCTS);
   // 検索テキストのstate変数の初期値
   const [filterText, setFilterText] = useState("");
@@ -102,22 +103,28 @@ function SearchBar({
 // ここでinputされた情報を受け取る必要がある！
 function AddProductForm({ products, onProductsChange }) {
   // ローカルのstateを作成する
+  // TODO: カテゴリの初期値ってfruitとか入れておくほうがいいのかな？
   const [productCategory, onProductCategoryChange] = useState("");
   const [productPrice, onProductPriceChange] = useState("");
   const [isProductStock, onIsProductStockChange] = useState(false);
   const [productName, onProductNameChange] = useState("");
 
-  const newProduct = {
-    category: productCategory,
-    price: productPrice,
-    stocked: isProductStock,
-    name: productName,
-  };
-  const newProducts = [...products, newProduct];
-
+  // フォームを送信するときに実行する処理
+  function handleSubmit(e) {
+    // 再描画を防ぐ
+    e.preventDefault();
+    const newProduct = {
+      category: productCategory,
+      price: `$${productPrice}`,
+      stocked: isProductStock,
+      name: productName,
+    };
+    const newProducts = [...products, newProduct];
+    onProductsChange(newProducts);
+  }
   // onProductsChange(newProducts);
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       {/* セレクトはどうやって入力を受け取る？ */}
       <select
         name="category"
@@ -152,13 +159,7 @@ function AddProductForm({ products, onProductsChange }) {
           onProductNameChange(e.target.value);
         }}
       ></input>
-      <button
-        onClick={() => {
-          onProductsChange(newProducts);
-        }}
-      >
-        add product
-      </button>
+      <button type="submit">add product</button>
     </form>
   );
 }
