@@ -90,6 +90,7 @@ function FilterableProductTable() {
     // stateとローカルストレージが一致していたら何もしない
     const storageProducts = localStorage.getItem(PRODUCTS_KEY);
     // ! 参照先が違うから常にフォルスになってしまう👇️
+    // 依存配列が更新されたときだけ実行するから、中身変わってないならuseEffectが実行されない？
     if (products === JSON.parse(storageProducts)) return;
     // stateとローカルストレージが違っていたらstateに合わせてローカルストレージを更新する
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
