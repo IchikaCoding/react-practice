@@ -67,13 +67,23 @@ function FilterableProductTable() {
   // productsをstateにする
   // リロードされると、またモックデータで初期化される
   const [products, setProducts] = useState(() => {
-    // 初回表示時にlocalStorageを確認する
-    const storageProducts = localStorage.getItem(PRODUCTS_KEY);
-    if (storageProducts === null) {
+    try {
+      // 初回表示時にlocalStorageを確認する
+      const storageProducts = localStorage.getItem(PRODUCTS_KEY);
+      // ローカルストレージの中身がなかったらモックデータをいれる
+      if (storageProducts === null) {
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(PRODUCTS));
+        return PRODUCTS;
+      }
+      // ローカルストレージにデータがあった場合、productsのstate変数にそのデータをいれる
+      // ちなみに、nullのときは早期リターンだからelseにしなくてもOK
+      return JSON.parse(storageProducts);
+    } catch (error) {
+      // もし上の処理中にエラーが出た場合、モックデータをstateに保存しつつ、ローカルストレージに保存し直す
+      console.error(error);
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(PRODUCTS));
       return PRODUCTS;
     }
-    // TODO: ここから途中です
-    // モックデータが入っていた場合のproductsのstateは何にするかを書きましょう♪
   });
   // 検索テキストのstate変数の初期値
   const [filterText, setFilterText] = useState("");
