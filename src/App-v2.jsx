@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // ローカルストレージのキー名の定義
 const PRODUCTS_KEY = "productsKey";
@@ -64,7 +64,7 @@ export default function App() {
  * @returns
  */
 function FilterableProductTable() {
-  // productsをstateにする
+  // productsをstateにして、更新もここで行われる
   // リロードされると、またモックデータで初期化される
   const [products, setProducts] = useState(() => {
     try {
@@ -85,6 +85,16 @@ function FilterableProductTable() {
       return PRODUCTS;
     }
   });
+  // TODO: productsのstateに合わせてローカルストレージを更新する
+  useEffect(() => {
+    // stateとローカルストレージが一致していたら何もしない
+    const storageProducts = localStorage.getItem(PRODUCTS_KEY);
+    // ! 参照先が違うから常にフォルスになってしまう👇️
+    if (products === JSON.parse(storageProducts)) return;
+    // stateとローカルストレージが違っていたらstateに合わせてローカルストレージを更新する
+    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+  }, [products]);
+
   // 検索テキストのstate変数の初期値
   const [filterText, setFilterText] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
@@ -150,8 +160,12 @@ function SearchBar({
   );
 }
 
-// TODO: 商品追加フォームを作成
 // ここでinputされた情報を受け取る必要がある！
+/**
+ * 商品追加フォームの作成、入力値を受け取る処理（UI担当）
+ * @param {*} param0
+ * @returns
+ */
 function AddProductForm({ products, onProductsChange }) {
   // ローカルのstateを作成する
   // TODO: カテゴリの初期値ってfruitとか入れておくほうがいいのかな？
@@ -172,6 +186,7 @@ function AddProductForm({ products, onProductsChange }) {
       name: productName,
     };
 
+    // FilterableProductTableにわたすための一時データ
     const newProducts = [...products, newProduct];
     onProductsChange(newProducts);
   }
