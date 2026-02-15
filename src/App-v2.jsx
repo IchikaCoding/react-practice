@@ -95,8 +95,8 @@ function FilterableProductTable() {
   // 検索テキストのstate変数の初期値
   const [filterText, setFilterText] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [filterCategory, setFilterCategory] = useState("");
-  const [productName, setProductName] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All");
+
   console.log("filterCategory", filterCategory);
   return (
     <div>
@@ -109,8 +109,6 @@ function FilterableProductTable() {
         onFilterCategoryChange={setFilterCategory}
         onFilterTextChange={setFilterText}
         onInStockOnlyChange={setInStockOnly}
-        productName={productName}
-        onProductNameChange={setProductName}
       />
       <AddProductForm products={products} onProductsChange={setProducts} />
       {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
@@ -159,7 +157,7 @@ function SearchBar({
           Only show products in stock
         </label>
         {/* カテゴリのセレクト要素を入れたい */}
-        {/*  */}
+        {/* valueでfilterCategoryというstateを代入しているから初期値はstateの初期値が採用される。selectedで初期値をしても意味なし！ */}
         {/* 入力値はここで取得 */}
         <select
           name="filterCategory"
