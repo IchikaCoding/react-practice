@@ -85,14 +85,10 @@ function FilterableProductTable() {
       return PRODUCTS;
     }
   });
-  // TODO: productsのstateに合わせてローカルストレージを更新する
+
   useEffect(() => {
-    // stateとローカルストレージが一致していたら何もしない
-    const storageProducts = localStorage.getItem(PRODUCTS_KEY);
-    // ! 参照先が違うから常にフォルスになってしまう👇️
-    // 依存配列が更新されたときだけ実行するから、中身変わってないならuseEffectが実行されない？
-    if (products === JSON.parse(storageProducts)) return;
     // stateとローカルストレージが違っていたらstateに合わせてローカルストレージを更新する
+    //  [products]は依存配列として指定している
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
   }, [products]);
 
@@ -169,7 +165,6 @@ function SearchBar({
  */
 function AddProductForm({ products, onProductsChange }) {
   // ローカルのstateを作成する
-  // TODO: カテゴリの初期値ってfruitとか入れておくほうがいいのかな？
   const [productCategory, onProductCategoryChange] = useState("Fruits");
   const [productPrice, onProductPriceChange] = useState("");
   const [isProductStock, onIsProductStockChange] = useState(false);
@@ -187,6 +182,7 @@ function AddProductForm({ products, onProductsChange }) {
       name: productName,
     };
 
+    // TODO: ここのコードは更新が気づかれないかも？！
     // FilterableProductTableにわたすための一時データ
     const newProducts = [...products, newProduct];
     onProductsChange(newProducts);
