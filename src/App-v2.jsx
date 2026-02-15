@@ -95,8 +95,9 @@ function FilterableProductTable() {
   // 検索テキストのstate変数の初期値
   const [filterText, setFilterText] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [filterCategory, setFilterCategory] = useState("");
   const [productName, setProductName] = useState("");
-
+  console.log("filterCategory", filterCategory);
   return (
     <div>
       {/* チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
@@ -104,6 +105,8 @@ function FilterableProductTable() {
       <SearchBar
         filterText={filterText}
         inStockOnly={inStockOnly}
+        filterCategory={filterCategory}
+        onFilterCategoryChange={setFilterCategory}
         onFilterTextChange={setFilterText}
         onInStockOnlyChange={setInStockOnly}
         productName={productName}
@@ -116,6 +119,7 @@ function FilterableProductTable() {
         products={products}
         inStockOnly={inStockOnly}
         filterText={filterText}
+        filterCategory={filterCategory}
       />
     </div>
   );
@@ -128,6 +132,8 @@ function FilterableProductTable() {
 function SearchBar({
   filterText,
   inStockOnly,
+  filterCategory,
+  onFilterCategoryChange,
   onFilterTextChange,
   onInStockOnlyChange,
 }) {
@@ -152,6 +158,22 @@ function SearchBar({
           />{" "}
           Only show products in stock
         </label>
+        {/* カテゴリのセレクト要素を入れたい */}
+        {/*  */}
+        {/* 入力値はここで取得 */}
+        <select
+          name="filterCategory"
+          id="filter-category-select"
+          value={filterCategory}
+          onChange={(e) => {
+            onFilterCategoryChange(e.target.value);
+          }}
+        >
+          <option value="All">All</option>
+          <option value="Fruits">Fruits</option>
+          <option value="Vegetables">Vegetables</option>
+          <option value="Snacks">Snacks</option>
+        </select>
       </form>
     </>
   );
@@ -182,7 +204,6 @@ function AddProductForm({ products, onProductsChange }) {
       name: productName,
     };
 
-    // TODO: ここのコードは更新が気づかれないかも？！
     // FilterableProductTableにわたすための一時データ
     const newProducts = [...products, newProduct];
     onProductsChange(newProducts);
@@ -241,18 +262,24 @@ function AddProductForm({ products, onProductsChange }) {
  * @param {Product[]} products
  * @returns
  */
-function ProductTable({ products, filterText, inStockOnly }) {
+function ProductTable({ products, filterText, inStockOnly, filterCategory }) {
   // カテゴリと商品の情報をいれるための配列
   const rows = [];
   // カテゴリが変わったことを判定するための変数
   let lastCategory = null;
   // TODO: productsの手前でカテゴリ順に並び替えること
-  const newProducts = products.toSorted((a, b) =>
+  const sortProducts = products.toSorted((a, b) =>
     a.category.localeCompare(b.category),
   );
-  console.log("newProducts", newProducts);
+  console.log("sortProducts", sortProducts);
+  //nullなら全部合格。カテゴリが一致するものがあったら一致のカテゴリだけ合格
+  const filterCategoryProducts = sortProducts.filter((product) => {
+    return filterCategory === "All" || filterCategory === product.category;
+  });
+  console.log("filterCategoryProducts", filterCategoryProducts);
+
   // forEachは配列の要素一つずつに指定した処理をするメソッド
-  newProducts.forEach((product) => {
+  filterCategoryProducts.forEach((product) => {
     // 商品の名前を全部小文字にしたものと、検索したい文字として入力された小文字文字列が一致しない場合はリターンする処理
     // indexOf()は文字列と検索したい文字列が一致しなかったら-1を返すメソッド
     if (product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
@@ -262,6 +289,7 @@ function ProductTable({ products, filterText, inStockOnly }) {
     if (inStockOnly && !product.stocked) {
       return;
     }
+
     if (product.category !== lastCategory) {
       // カテゴリーが変わったことを判定するための条件分岐
       rows.push(
