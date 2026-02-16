@@ -70,14 +70,23 @@ function FilterableProductTable() {
     try {
       // 初回表示時にlocalStorageを確認する
       const storageProducts = localStorage.getItem(PRODUCTS_KEY);
+      const parsedStorageProducts = JSON.parse(storageProducts);
       // ローカルストレージの中身がなかったらモックデータをいれる
-      if (storageProducts === null) {
+      if (parsedStorageProducts === null) {
+        return PRODUCTS;
+      }
+
+      // 配列じゃないとき、もしくは要素がゼロのときはモックデータを返す
+      if (
+        !Array.isArray(parsedStorageProducts) ||
+        parsedStorageProducts.length === 0
+      ) {
         localStorage.setItem(PRODUCTS_KEY, JSON.stringify(PRODUCTS));
         return PRODUCTS;
       }
       // ローカルストレージにデータがあった場合、productsのstate変数にそのデータをいれる
       // ちなみに、nullのときは早期リターンだからelseにしなくてもOK
-      return JSON.parse(storageProducts);
+      return parsedStorageProducts;
     } catch (error) {
       // もし上の処理中にエラーが出た場合、モックデータをstateに保存しつつ、ローカルストレージに保存し直す
       console.error(error);
@@ -85,6 +94,12 @@ function FilterableProductTable() {
       return PRODUCTS;
     }
   });
+
+  function handleDeleteButton(deleteBtnId) {
+    // productsのコピーをprevとして作成。その配列から1つずつ要素を取得する
+    // その要素のIDとdeleteBtnIdが一致していたら削除できる
+    setProducts((prev) => prev.filter((product) => product.id !== deleteBtnId));
+  }
 
   useEffect(() => {
     // stateとローカルストレージが違っていたらstateに合わせてローカルストレージを更新する
@@ -118,6 +133,7 @@ function FilterableProductTable() {
         inStockOnly={inStockOnly}
         filterText={filterText}
         filterCategory={filterCategory}
+        handleDeleteButton={handleDeleteButton}
       />
     </div>
   );
@@ -260,7 +276,13 @@ function AddProductForm({ products, onProductsChange }) {
  * @param {Product[]} products
  * @returns
  */
-function ProductTable({ products, filterText, inStockOnly, filterCategory }) {
+function ProductTable({
+  products,
+  filterText,
+  inStockOnly,
+  filterCategory,
+  handleDeleteButton,
+}) {
   // カテゴリと商品の情報をいれるための配列
   const rows = [];
   // カテゴリが変わったことを判定するための変数
@@ -301,10 +323,17 @@ function ProductTable({ products, filterText, inStockOnly, filterCategory }) {
       );
     }
     // 商品を表示するためのコンポーネントを配列に追加
-    rows.push(<ProductRow product={product} key={product.id} />);
+    rows.push(
+      <ProductRow
+        product={product}
+        key={product.id}
+        handleDeleteButton={handleDeleteButton}
+      />,
+    );
     lastCategory = product.category;
     console.log("lastCategory", lastCategory);
   });
+
   console.log("rows", rows);
   return (
     <table>
@@ -312,6 +341,7 @@ function ProductTable({ products, filterText, inStockOnly, filterCategory }) {
         <tr>
           <th>Name</th>
           <th>Price</th>
+          <th>Delete</th>
         </tr>
       </thead>
       {/* JSXの要素の配列はReactが展開して、順番に表示してくれるらしい！！ */}
@@ -330,7 +360,7 @@ function ProductCategoryRow({ category }) {
   return (
     <tr>
       {/* colSpanは、列を横向きに結合できるもの。今回でいうと、2列を一つのセルとして結合している */}
-      <th colSpan="2">{category}</th>
+      <th colSpan="3">{category}</th>
     </tr>
   );
 }
@@ -339,7 +369,7 @@ function ProductCategoryRow({ category }) {
  * @param {Object} product Products配列が持っている一つずつのオブジェクト
  * @returns
  */
-function ProductRow({ product }) {
+function ProductRow({ product, handleDeleteButton }) {
   // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
   const name = product.stocked ? (
     product.name
@@ -352,6 +382,9 @@ function ProductRow({ product }) {
     <tr>
       <td>{name}</td>
       <td>{product.price}</td>
+      <td>
+        <button onClick={() => handleDeleteButton(product.id)}>削除</button>
+      </td>
     </tr>
   );
 }
