@@ -104,6 +104,10 @@ function FilterableProductTable() {
   }
   // モーダル画面のOKボタンが押されたときの処理
   function handleModalOkBtn() {
+    // deleteBtnIdがnullのときは削除を実行しないというガード
+    if (!deleteBtnId) {
+      return;
+    }
     // productsのコピーをprevとして作成。その配列から1つずつ要素を取得する
     // その要素のIDとdeleteBtnIdが一致していたら削除できる
     setProducts((prev) => prev.filter((product) => product.id !== deleteBtnId));
@@ -411,13 +415,21 @@ function ProductRow({ product, handleDeleteButton }) {
 
 function Modal({ isModalOpen, onConfirm, onCancel }) {
   if (!isModalOpen) {
+    // React のコンポーネントの return なら null を返す
     return null;
   }
   // returnされるもの
   return (
-    <div>
-      <button onClick={onConfirm}>OK</button>
-      <button onClick={onCancel}>Cancel</button>
+    // モーダル画面をだしているときに暗くなる背景の部分。ここをクリックするとキャンセルされる
+    <div className="modal-overlay" onClick={onCancel}>
+      {/* モーダル画面本体。e.stopPropagation()によって
+      ダイアログがクリックされても背景までクリックされたことが伝わらない！
+      だから、ダイアログを押してもダイアログが閉じることがなくなる！
+      */}
+      <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+        <button onClick={onCancel}>Cancel</button>
+        <button onClick={onConfirm}>OK</button>
+      </div>
     </div>
   );
 }
