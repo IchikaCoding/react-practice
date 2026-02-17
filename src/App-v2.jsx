@@ -64,7 +64,9 @@ export default function App() {
  * @returns
  */
 function FilterableProductTable() {
+  // TODO: このisModalOpen変数は使わなくてもOK？
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteBtnId, setDeleteBtnId] = useState(null);
   // productsをstateにして、更新もここで行われる
   // リロードされると、またモックデータで初期化される
   const [products, setProducts] = useState(() => {
@@ -98,10 +100,20 @@ function FilterableProductTable() {
 
   function handleDeleteButton(deleteBtnId) {
     setIsModalOpen(true);
-
+    setDeleteBtnId(deleteBtnId);
+  }
+  // モーダル画面のOKボタンが押されたときの処理
+  function handleModalOkBtn() {
     // productsのコピーをprevとして作成。その配列から1つずつ要素を取得する
     // その要素のIDとdeleteBtnIdが一致していたら削除できる
     setProducts((prev) => prev.filter((product) => product.id !== deleteBtnId));
+    setIsModalOpen(false);
+    // deleteした後はDeleteボタンのIDはリセットしたいからnullをいれる
+    setDeleteBtnId(null);
+  }
+  function handleModalCancelBtn() {
+    setIsModalOpen(false);
+    setDeleteBtnId(null);
   }
 
   useEffect(() => {
@@ -137,6 +149,11 @@ function FilterableProductTable() {
         filterText={filterText}
         filterCategory={filterCategory}
         handleDeleteButton={handleDeleteButton}
+      />
+      <Modal
+        isModalOpen={isModalOpen}
+        onConfirm={handleModalOkBtn}
+        onCancel={handleModalCancelBtn}
       />
     </div>
   );
@@ -389,5 +406,18 @@ function ProductRow({ product, handleDeleteButton }) {
         <button onClick={() => handleDeleteButton(product.id)}>削除</button>
       </td>
     </tr>
+  );
+}
+
+function Modal({ isModalOpen, onConfirm, onCancel }) {
+  if (!isModalOpen) {
+    return null;
+  }
+  // returnされるもの
+  return (
+    <div>
+      <button onClick={onConfirm}>OK</button>
+      <button onClick={onCancel}>Cancel</button>
+    </div>
   );
 }
