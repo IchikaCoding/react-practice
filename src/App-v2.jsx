@@ -106,6 +106,8 @@ function FilterableProductTable() {
   function handleModalOkBtn() {
     // deleteBtnIdがnullのときは削除を実行しないというガード
     if (!deleteBtnId) {
+      // 安全のため、deleteBtnIdがnullのときは閉じる
+      setIsModalOpen(false);
       return;
     }
     // productsのコピーをprevとして作成。その配列から1つずつ要素を取得する
@@ -426,7 +428,18 @@ function Modal({ isModalOpen, onConfirm, onCancel }) {
       ダイアログがクリックされても背景までクリックされたことが伝わらない！
       だから、ダイアログを押してもダイアログが閉じることがなくなる！
       */}
-      <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-dialog"
+        onClick={(e) => e.stopPropagation()}
+        // モーダルってことをアクセシビリティ情報として追加。
+        aria-modal="true"
+        role="dialog"
+        tabIndex={-1}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onCancel();
+        }}
+      >
+        <p>本当に削除しますか？</p>
         <button onClick={onCancel}>Cancel</button>
         <button onClick={onConfirm}>OK</button>
       </div>
