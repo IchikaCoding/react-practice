@@ -439,7 +439,7 @@ function Modal({ isModalOpen, onConfirm, onCancel }) {
           if (e.key === "Escape") onCancel();
         }}
       >
-        <p>本当に削除しますか？</p>
+        <p>Are you sure you want to delete?</p>
         <button onClick={onCancel}>Cancel</button>
         <button onClick={onConfirm}>OK</button>
       </div>
