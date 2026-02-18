@@ -66,6 +66,7 @@ export default function App() {
 function FilterableProductTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteBtnId, setDeleteBtnId] = useState(null);
+  const [editBtnId, setEditBtnId] = useState(null);
   // productsをstateにして、更新もここで行われる
   // リロードされると、またモックデータで初期化される
   const [products, setProducts] = useState(() => {
@@ -97,6 +98,9 @@ function FilterableProductTable() {
     }
   });
 
+  function handleEditButton(editBtnId) {
+    console.log("こんちか！", editBtnId);
+  }
   function handleDeleteButton(deleteBtnId) {
     setIsModalOpen(true);
     setDeleteBtnId(deleteBtnId);
@@ -154,6 +158,7 @@ function FilterableProductTable() {
         filterText={filterText}
         filterCategory={filterCategory}
         handleDeleteButton={handleDeleteButton}
+        handleEditButton={handleEditButton}
       />
       <Modal
         isModalOpen={isModalOpen}
@@ -307,6 +312,7 @@ function ProductTable({
   inStockOnly,
   filterCategory,
   handleDeleteButton,
+  handleEditButton,
 }) {
   // カテゴリと商品の情報をいれるための配列
   const rows = [];
@@ -353,6 +359,7 @@ function ProductTable({
         product={product}
         key={product.id}
         handleDeleteButton={handleDeleteButton}
+        handleEditButton={handleEditButton}
       />,
     );
     lastCategory = product.category;
@@ -366,6 +373,7 @@ function ProductTable({
         <tr>
           <th>Name</th>
           <th>Price</th>
+          <th>Edit</th>
           <th>Delete</th>
         </tr>
       </thead>
@@ -385,7 +393,7 @@ function ProductCategoryRow({ category }) {
   return (
     <tr>
       {/* colSpanは、列を横向きに結合できるもの。今回でいうと、2列を一つのセルとして結合している */}
-      <th colSpan="3">{category}</th>
+      <th colSpan="4">{category}</th>
     </tr>
   );
 }
@@ -394,7 +402,7 @@ function ProductCategoryRow({ category }) {
  * @param {Object} product Products配列が持っている一つずつのオブジェクト
  * @returns
  */
-function ProductRow({ product, handleDeleteButton }) {
+function ProductRow({ product, handleDeleteButton, handleEditButton }) {
   // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
   const name = product.stocked ? (
     product.name
@@ -408,7 +416,11 @@ function ProductRow({ product, handleDeleteButton }) {
       <td>{name}</td>
       <td>{product.price}</td>
       <td>
-        <button onClick={() => handleDeleteButton(product.id)}>削除</button>
+        <button onClick={() => handleEditButton(product.id)}>Edit</button>
+      </td>
+
+      <td>
+        <button onClick={() => handleDeleteButton(product.id)}>Delete</button>
       </td>
     </tr>
   );
@@ -462,3 +474,6 @@ function Modal({ isModalOpen, onConfirm, onCancel }) {
     </div>
   );
 }
+
+//
+function ProductEditingForm() {}
