@@ -109,7 +109,8 @@ body {
 .modal-dialog {
   background-color: #f3bb84;
   /* 中の余白。単位が必要 */
-  padding: 20px 50px 20px 50px;
+  /* 2つだけ大きさを指定した場合、上下と左右の比率で指定できる */
+  padding: 20px 50px;
   /* 角の丸み */
   border-radius: 16px;
   /* ? ダイアログの影 */
