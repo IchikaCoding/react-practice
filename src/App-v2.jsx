@@ -64,7 +64,6 @@ export default function App() {
  * @returns
  */
 function FilterableProductTable() {
-  // TODO: このisModalOpen変数は使わなくてもOK？
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteBtnId, setDeleteBtnId] = useState(null);
   // productsをstateにして、更新もここで行われる
@@ -416,6 +415,23 @@ function ProductRow({ product, handleDeleteButton }) {
 }
 
 function Modal({ isModalOpen, onConfirm, onCancel }) {
+  // イベントリスナー登録したい！これは画面描画以外👉️useEffectの出番！
+  // TODO: これって最後に処理される？
+  useEffect(() => {
+    // エスケープキーのハンドラ
+    function handleEscapeKeyDown(e) {
+      if (e.key === "Escape") {
+        return onCancel();
+      }
+    }
+    document.addEventListener("keydown", handleEscapeKeyDown);
+    // イベントの処理が終わったらreturnのうしろにイベントの解除の処理を書く！
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKeyDown);
+    };
+    // useEffect内で使ったから書いた
+  }, [isModalOpen, onCancel]);
+
   if (!isModalOpen) {
     // React のコンポーネントの return なら null を返す
     return null;
