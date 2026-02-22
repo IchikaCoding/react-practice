@@ -66,7 +66,11 @@ export default function App() {
 function FilterableProductTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteBtnId, setDeleteBtnId] = useState(null);
-  const [editBtnId, setEditBtnId] = useState(null);
+  // 編集中かどうかを管理するためのState変数。IDで管理する
+  const [editingId, setEditingId] = useState(null);
+  // 編集中の商品名と価格は下書きstate変数に入れておく
+  const [draftName, setDraftName] = useState("");
+  const [draftPrice, setDraftPrice] = useState("");
   // productsをstateにして、更新もここで行われる
   // リロードされると、またモックデータで初期化される
   const [products, setProducts] = useState(() => {
@@ -98,9 +102,30 @@ function FilterableProductTable() {
     }
   });
 
+  /**
+   * 編集開始の準備だけをする処理
+   * @param {*} editBtnId
+   */
   function handleEditButton(editBtnId) {
-    console.log("こんちか！", editBtnId);
+    // 編集中のIDをセットする
+    setEditingId(editBtnId);
+
+    // Products配列からproductの要素を取得
+    // そのデータを表示する
+    const searchProduct = products.find((product) => {
+      if (editingId === product.id) {
+        return product;
+      }
+    });
+    setDraftName(searchProduct.name);
+    setDraftPrice(searchProduct.price);
+    console.log("searchProduct", searchProduct);
   }
+
+  function handleSaveButton(saveBtnId) {
+    // TODO: 下書きをしていたデータを使用して、Productのデータを更新
+  }
+
   function handleDeleteButton(deleteBtnId) {
     setIsModalOpen(true);
     setDeleteBtnId(deleteBtnId);
@@ -158,7 +183,10 @@ function FilterableProductTable() {
         filterText={filterText}
         filterCategory={filterCategory}
         handleDeleteButton={handleDeleteButton}
+        editingId={editingId}
         handleEditButton={handleEditButton}
+        handleSaveButton={handleSaveButton}
+        handleCancelButton={handleCancelButton}
       />
       <Modal
         isModalOpen={isModalOpen}
@@ -312,7 +340,10 @@ function ProductTable({
   inStockOnly,
   filterCategory,
   handleDeleteButton,
+  editingId,
   handleEditButton,
+  handleSaveButton,
+  handleCancelButton,
 }) {
   // カテゴリと商品の情報をいれるための配列
   const rows = [];
@@ -359,7 +390,10 @@ function ProductTable({
         product={product}
         key={product.id}
         handleDeleteButton={handleDeleteButton}
+        editingId={editingId}
         handleEditButton={handleEditButton}
+        handleSaveButton={handleSaveButton}
+        handleCancelButton={handleCancelButton}
       />,
     );
     lastCategory = product.category;
@@ -402,28 +436,63 @@ function ProductCategoryRow({ category }) {
  * @param {Object} product Products配列が持っている一つずつのオブジェクト
  * @returns
  */
-function ProductRow({ product, handleDeleteButton, handleEditButton }) {
+function ProductRow({
+  product,
+  handleDeleteButton,
+  editingId,
+  handleEditButton,
+  setDraftName,
+  setDraftPrice,
+  handleSaveButton,
+  handleCancelButton,
+}) {
   // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
   const name = product.stocked ? (
     product.name
   ) : (
     <span style={{ color: "red" }}>{product.name}</span>
   );
+  if (editingId === product.id) {
+    return (
+      <>
+        <tr>
+          <form onSubmit={() => handleSaveButton(product.id)}>
+            <td>
+              <input type="text" onChange={() => setDraftName} />
+              {name}
+            </td>
+            <td>
+              <input type="number" onChange={() => setDraftPrice} />
+              {product.price}
+            </td>
+            <td>
+              <button type="submit">Save</button>
+            </td>
+          </form>
+          <td>
+            <button onClick={() => handleCancelButton(product.id)}>
+              Cancel
+            </button>
+          </td>
+        </tr>
+      </>
+    );
+  } else {
+    return (
+      // 1行に2列を表示する
+      <tr>
+        <td>{name}</td>
+        <td>{product.price}</td>
+        <td>
+          <button onClick={() => handleEditButton(product.id)}>Edit</button>
+        </td>
 
-  return (
-    // 1行に2列を表示する
-    <tr>
-      <td>{name}</td>
-      <td>{product.price}</td>
-      <td>
-        <button onClick={() => handleEditButton(product.id)}>Edit</button>
-      </td>
-
-      <td>
-        <button onClick={() => handleDeleteButton(product.id)}>Delete</button>
-      </td>
-    </tr>
-  );
+        <td>
+          <button onClick={() => handleDeleteButton(product.id)}>Delete</button>
+        </td>
+      </tr>
+    );
+  }
 }
 
 function Modal({ isModalOpen, onConfirm, onCancel }) {
@@ -475,5 +544,5 @@ function Modal({ isModalOpen, onConfirm, onCancel }) {
   );
 }
 
-//
+// TODO: テーブルの2行目に編集用のモーダル画面を追加して在庫を修正できるようにする！
 function ProductEditingForm() {}
