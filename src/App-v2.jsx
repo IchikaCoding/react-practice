@@ -113,7 +113,8 @@ function FilterableProductTable() {
     // Products配列からproductの要素を取得
     // そのデータを表示する
     const searchProduct = products.find((product) => {
-      if (editingId === product.id) {
+      // ! IDセットした直後に使用してるからstateより引数を使用する
+      if (editBtnId === product.id) {
         return product;
       }
     });
@@ -123,7 +124,25 @@ function FilterableProductTable() {
   }
 
   function handleSaveButton(saveBtnId) {
-    // TODO: 下書きをしていたデータを使用して、Productのデータを更新
+    console.log("saveBtnId", saveBtnId);
+    // 下書きからProducts自体を更新する
+
+    // TODO: 新しく配列を作成→それで更新しないとReactが再描画してくれないかも？
+    setProducts((prev) =>
+      prev.map((item) => {
+        if (item.id === saveBtnId) {
+          item.name = draftName;
+          item.price = draftPrice;
+          return item;
+        }
+        return item;
+      }),
+    );
+    setEditingId("");
+  }
+  function handleCancelButton(cancelBtnId) {
+    console.log("cancelBtnId", cancelBtnId);
+    setEditingId("");
   }
 
   function handleDeleteButton(deleteBtnId) {
@@ -344,6 +363,8 @@ function ProductTable({
   handleEditButton,
   handleSaveButton,
   handleCancelButton,
+  setDraftName,
+  setDraftPrice,
 }) {
   // カテゴリと商品の情報をいれるための配列
   const rows = [];
@@ -394,6 +415,8 @@ function ProductTable({
         handleEditButton={handleEditButton}
         handleSaveButton={handleSaveButton}
         handleCancelButton={handleCancelButton}
+        setDraftName={setDraftName}
+        setDraftPrice={setDraftPrice}
       />,
     );
     lastCategory = product.category;
@@ -456,19 +479,25 @@ function ProductRow({
     return (
       <>
         <tr>
-          <form onSubmit={() => handleSaveButton(product.id)}>
-            <td>
-              <input type="text" onChange={() => setDraftName} />
-              {name}
-            </td>
-            <td>
-              <input type="number" onChange={() => setDraftPrice} />
-              {product.price}
-            </td>
-            <td>
-              <button type="submit">Save</button>
-            </td>
-          </form>
+          <td>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setDraftName(e.target.value)}
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              value={`${product.price.replace("$", "")}`}
+              onChange={(e) => setDraftPrice(e.target.value)}
+            />
+          </td>
+          <td>
+            <button onClick={() => handleSaveButton(product.id)} type="submit">
+              Save
+            </button>
+          </td>
           <td>
             <button onClick={() => handleCancelButton(product.id)}>
               Cancel
