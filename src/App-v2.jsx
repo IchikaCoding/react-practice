@@ -118,31 +118,34 @@ function FilterableProductTable() {
         return product;
       }
     });
+    if (!searchProduct) return;
     setDraftName(searchProduct.name);
+    // TODO: ＄をなくす処理を入れるべき？
     setDraftPrice(searchProduct.price);
     console.log("searchProduct", searchProduct);
   }
 
+  // TODO: ここでデータの更新がうまくいっていない！→商品の値段がしっかりできていません
   function handleSaveButton(saveBtnId) {
     console.log("saveBtnId", saveBtnId);
     // 下書きからProducts自体を更新する
-
     // TODO: 新しく配列を作成→それで更新しないとReactが再描画してくれないかも？
     setProducts((prev) =>
       prev.map((item) => {
-        if (item.id === saveBtnId) {
-          item.name = draftName;
-          item.price = draftPrice;
-          return item;
-        }
+        // オブジェクトでスプレッド構文を使用した理由は？
+        // 値を更新したものだけが変更されて、それ以外はそのまま展開される。順番はもとのまま
+        item.id === saveBtnId
+          ? { ...item, name: draftName, price: draftPrice }
+          : item;
         return item;
       }),
     );
-    setEditingId("");
+    // IDのリセットのためになにもないよと意味でnullを入れる
+    setEditingId(null);
   }
   function handleCancelButton(cancelBtnId) {
     console.log("cancelBtnId", cancelBtnId);
-    setEditingId("");
+    setEditingId(null);
   }
 
   function handleDeleteButton(deleteBtnId) {
@@ -206,6 +209,10 @@ function FilterableProductTable() {
         handleEditButton={handleEditButton}
         handleSaveButton={handleSaveButton}
         handleCancelButton={handleCancelButton}
+        draftName={draftName}
+        draftPrice={draftPrice}
+        setDraftName={setDraftName}
+        setDraftPrice={setDraftPrice}
       />
       <Modal
         isModalOpen={isModalOpen}
@@ -365,6 +372,8 @@ function ProductTable({
   handleCancelButton,
   setDraftName,
   setDraftPrice,
+  draftName,
+  draftPrice,
 }) {
   // カテゴリと商品の情報をいれるための配列
   const rows = [];
@@ -417,6 +426,8 @@ function ProductTable({
         handleCancelButton={handleCancelButton}
         setDraftName={setDraftName}
         setDraftPrice={setDraftPrice}
+        draftName={draftName}
+        draftPrice={draftPrice}
       />,
     );
     lastCategory = product.category;
@@ -468,6 +479,8 @@ function ProductRow({
   setDraftPrice,
   handleSaveButton,
   handleCancelButton,
+  draftName,
+  draftPrice,
 }) {
   // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
   const name = product.stocked ? (
@@ -482,19 +495,19 @@ function ProductRow({
           <td>
             <input
               type="text"
-              value={name}
+              value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
             />
           </td>
           <td>
             <input
               type="text"
-              value={`${product.price.replace("$", "")}`}
+              value={`${draftPrice.replace("$", "")}`}
               onChange={(e) => setDraftPrice(e.target.value)}
             />
           </td>
           <td>
-            <button onClick={() => handleSaveButton(product.id)} type="submit">
+            <button onClick={() => handleSaveButton(product.id)} type="button">
               Save
             </button>
           </td>
