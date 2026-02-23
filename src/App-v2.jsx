@@ -134,6 +134,7 @@ function FilterableProductTable() {
       prev.map((item) => {
         // オブジェクトでスプレッド構文を使用した理由は？
         // 値を更新したものだけが変更されて、それ以外はそのまま展開される。順番はもとのまま
+        // TODO: 三項演算子のときって、{ ...item, name: draftName, price: draftPrice }はreturnされる？
         item.id === saveBtnId
           ? { ...item, name: draftName, price: draftPrice }
           : item;
