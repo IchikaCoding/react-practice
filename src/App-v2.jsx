@@ -4,39 +4,39 @@ import { useState, useEffect } from "react";
 const PRODUCTS_KEY = "productsKey";
 // モックデータ
 const PRODUCTS = [
-  { id: "p1", category: "Fruits", price: "$1", stocked: true, name: "Apple" },
+  { id: "p1", category: "Fruits", price: 1, stocked: true, name: "Apple" },
   {
     id: "p2",
     category: "Fruits",
-    price: "$1",
+    price: 1,
     stocked: true,
     name: "DragonFruit",
   },
   {
     id: "p3",
     category: "Fruits",
-    price: "$2",
+    price: 2,
     stocked: false,
     name: "PassionFruit",
   },
   {
     id: "p4",
     category: "Vegetables",
-    price: "$2",
+    price: 2,
     stocked: true,
     name: "Spinach",
   },
   {
     id: "p5",
     category: "Vegetables",
-    price: "$4",
+    price: 4,
     stocked: false,
     name: "Pumpkin",
   },
   {
     id: "p6",
     category: "Vegetables",
-    price: "$1",
+    price: 1,
     stocked: true,
     name: "Peas",
   },
@@ -71,6 +71,8 @@ function FilterableProductTable() {
   // 編集中の商品名と価格は下書きstate変数に入れておく
   const [draftName, setDraftName] = useState("");
   const [draftPrice, setDraftPrice] = useState("");
+  // 商品の値段が空欄だったときに表示するためのエラーメッセージstate
+  const [errorMessage, setErrorMessage] = useState("");
   // productsをstateにして、更新もここで行われる
   // リロードされると、またモックデータで初期化される
   const [products, setProducts] = useState(() => {
@@ -121,24 +123,30 @@ function FilterableProductTable() {
     if (!searchProduct) return;
     setDraftName(searchProduct.name);
     // TODO: ＄をなくす処理を入れるべき？
-    setDraftPrice(searchProduct.price);
+    setDraftPrice(searchProduct.price.toString());
+    console.log("draftPrice", Number.isFinite(draftPrice));
     console.log("searchProduct", searchProduct);
   }
 
   // TODO: ここでデータの更新がうまくいっていない！→商品の値段がしっかりできていません
   function handleSaveButton(saveBtnId) {
     console.log("saveBtnId", saveBtnId);
+    // 値段が空欄だったら早期リターンする
+    if (draftPrice === "") {
+      setErrorMessage("Please enter the price");
+      return;
+    }
+    setErrorMessage(null);
     // 下書きからProducts自体を更新する
     // TODO: 新しく配列を作成→それで更新しないとReactが再描画してくれないかも？
     setProducts((prev) =>
       prev.map((item) => {
         // オブジェクトでスプレッド構文を使用した理由は？
         // 値を更新したものだけが変更されて、それ以外はそのまま展開される。順番はもとのまま
-        // TODO: 三項演算子のときって、{ ...item, name: draftName, price: draftPrice }はreturnされる？
-        item.id === saveBtnId
-          ? { ...item, name: draftName, price: draftPrice }
+        // mapして新しい配列を作成したいなら、その要素をreturnしないといけない！
+        return item.id === saveBtnId
+          ? { ...item, name: draftName, price: Number(draftPrice) }
           : item;
-        return item;
       }),
     );
     // IDのリセットのためになにもないよと意味でnullを入れる
@@ -214,6 +222,7 @@ function FilterableProductTable() {
         draftPrice={draftPrice}
         setDraftName={setDraftName}
         setDraftPrice={setDraftPrice}
+        errorMessage={errorMessage}
       />
       <Modal
         isModalOpen={isModalOpen}
@@ -287,18 +296,25 @@ function SearchBar({
 function AddProductForm({ products, onProductsChange }) {
   // ローカルのstateを作成する
   const [productCategory, onProductCategoryChange] = useState("Fruits");
+  // ! この子はe.target.valueでもらってくるから、文字列がよろしい
   const [productPrice, onProductPriceChange] = useState("");
   const [isProductStock, onIsProductStockChange] = useState(false);
   const [productName, onProductNameChange] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   // フォームを送信するときに実行する処理
   function handleSubmit(e) {
     // 再描画を防ぐ
     e.preventDefault();
+    if (productPrice === "") {
+      setErrorMessage("Please enter the price");
+      return;
+    }
+    setErrorMessage(null);
     const newProduct = {
       id: crypto.randomUUID(),
       category: productCategory,
-      price: `$${productPrice}`,
+      price: Number(productPrice),
       stocked: isProductStock,
       name: productName,
     };
@@ -309,44 +325,47 @@ function AddProductForm({ products, onProductsChange }) {
   }
   // onProductsChange(newProducts);
   return (
-    <form onSubmit={handleSubmit}>
-      {/* セレクトはどうやって入力を受け取る？ */}
-      <select
-        name="category"
-        id="category-select"
-        value={productCategory}
-        onChange={(e) => {
-          onProductCategoryChange(e.target.value);
-        }}
-      >
-        <option value="Fruits">Fruits</option>
-        <option value="Vegetables">Vegetables</option>
-        <option value="Snacks">Snacks</option>
-      </select>
-      <input
-        type="number"
-        value={productPrice}
-        onChange={(e) => {
-          onProductPriceChange(e.target.value);
-        }}
-      />
-      <input
-        type="checkbox"
-        checked={isProductStock}
-        onChange={(e) => {
-          onIsProductStockChange(e.target.checked);
-        }}
-      />
-      <input
-        type="text"
-        placeholder="Add..."
-        value={productName}
-        onChange={(e) => {
-          onProductNameChange(e.target.value);
-        }}
-      ></input>
-      <button type="submit">add product</button>
-    </form>
+    <>
+      <form onSubmit={handleSubmit}>
+        {/* セレクトはどうやって入力を受け取る？ */}
+        <select
+          name="category"
+          id="category-select"
+          value={productCategory}
+          onChange={(e) => {
+            onProductCategoryChange(e.target.value);
+          }}
+        >
+          <option value="Fruits">Fruits</option>
+          <option value="Vegetables">Vegetables</option>
+          <option value="Snacks">Snacks</option>
+        </select>
+        <input
+          type="number"
+          value={productPrice}
+          onChange={(e) => {
+            onProductPriceChange(e.target.value);
+          }}
+        />
+        <input
+          type="checkbox"
+          checked={isProductStock}
+          onChange={(e) => {
+            onIsProductStockChange(e.target.checked);
+          }}
+        />
+        <input
+          type="text"
+          placeholder="Add..."
+          value={productName}
+          onChange={(e) => {
+            onProductNameChange(e.target.value);
+          }}
+        ></input>
+        <button type="submit">add product</button>
+      </form>
+      <p className="error-message">{errorMessage}</p>
+    </>
   );
 }
 
@@ -375,6 +394,7 @@ function ProductTable({
   setDraftPrice,
   draftName,
   draftPrice,
+  errorMessage,
 }) {
   // カテゴリと商品の情報をいれるための配列
   const rows = [];
@@ -429,6 +449,7 @@ function ProductTable({
         setDraftPrice={setDraftPrice}
         draftName={draftName}
         draftPrice={draftPrice}
+        errorMessage={errorMessage}
       />,
     );
     lastCategory = product.category;
@@ -482,6 +503,7 @@ function ProductRow({
   handleCancelButton,
   draftName,
   draftPrice,
+  errorMessage,
 }) {
   // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
   const name = product.stocked ? (
@@ -489,7 +511,47 @@ function ProductRow({
   ) : (
     <span style={{ color: "red" }}>{product.name}</span>
   );
+
   if (editingId === product.id) {
+    if (draftPrice === "") {
+      return (
+        <>
+          <tr>
+            <td>
+              <input
+                type="text"
+                value={draftName}
+                onChange={(e) => setDraftName(e.target.value)}
+              />
+            </td>
+            <td>
+              <span>$</span>
+              <input
+                type="number"
+                value={draftPrice}
+                onChange={(e) => setDraftPrice(e.target.value)}
+              />
+            </td>
+            <td>
+              <button
+                onClick={() => handleSaveButton(product.id)}
+                type="button"
+              >
+                Save
+              </button>
+            </td>
+            <td>
+              <button onClick={() => handleCancelButton(product.id)}>
+                Cancel
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td className="error-message">{errorMessage}</td>
+          </tr>
+        </>
+      );
+    }
     return (
       <>
         <tr>
@@ -501,9 +563,10 @@ function ProductRow({
             />
           </td>
           <td>
+            <span>$</span>
             <input
-              type="text"
-              value={`${draftPrice.replace("$", "")}`}
+              type="number"
+              value={draftPrice}
               onChange={(e) => setDraftPrice(e.target.value)}
             />
           </td>
@@ -525,7 +588,7 @@ function ProductRow({
       // 1行に2列を表示する
       <tr>
         <td>{name}</td>
-        <td>{product.price}</td>
+        <td>{`$${product.price}`}</td>
         <td>
           <button onClick={() => handleEditButton(product.id)}>Edit</button>
         </td>
