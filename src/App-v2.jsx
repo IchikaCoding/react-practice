@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import ProductCategoryRow from "./components/ProductCategoryRow";
 // ローカルストレージのキー名の定義
 const PRODUCTS_KEY = "productsKey";
 // モックデータ
@@ -473,20 +473,6 @@ function ProductTable({
   );
 }
 
-/**
- * カテゴリを一つずつ表示するコンポーネント
- *
- * @param {string} category
- * @returns
- */
-function ProductCategoryRow({ category }) {
-  return (
-    <tr>
-      {/* colSpanは、列を横向きに結合できるもの。今回でいうと、2列を一つのセルとして結合している */}
-      <th colSpan="4">{category}</th>
-    </tr>
-  );
-}
 /**
  * 商品を一つずつ表示しているコンポーネント
  * @param {Object} product Products配列が持っている一つずつのオブジェクト
