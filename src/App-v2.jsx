@@ -513,45 +513,6 @@ function ProductRow({
   );
 
   if (editingId === product.id) {
-    if (draftPrice === "") {
-      return (
-        <>
-          <tr>
-            <td>
-              <input
-                type="text"
-                value={draftName}
-                onChange={(e) => setDraftName(e.target.value)}
-              />
-            </td>
-            <td>
-              <span>$</span>
-              <input
-                type="number"
-                value={draftPrice}
-                onChange={(e) => setDraftPrice(e.target.value)}
-              />
-            </td>
-            <td>
-              <button
-                onClick={() => handleSaveButton(product.id)}
-                type="button"
-              >
-                Save
-              </button>
-            </td>
-            <td>
-              <button onClick={() => handleCancelButton(product.id)}>
-                Cancel
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td className="error-message">{errorMessage}</td>
-          </tr>
-        </>
-      );
-    }
     return (
       <>
         <tr>
@@ -579,6 +540,12 @@ function ProductRow({
             <button onClick={() => handleCancelButton(product.id)}>
               Cancel
             </button>
+          </td>
+        </tr>
+        <tr>
+          <td className="error-message">
+            {/* 空文字だけのときに限定しないでエラーメッセージがtruthyだったら表示するほうがいい */}
+            {errorMessage ? errorMessage : null}
           </td>
         </tr>
       </>
