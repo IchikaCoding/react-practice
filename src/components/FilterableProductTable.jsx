@@ -3,48 +3,7 @@ import Modal from "./Modal";
 import SearchBar from "./SearchBar";
 import ProductTable from "./ProductTable";
 import AddProductForm from "./AddProductForm";
-
-// ローカルストレージのキー名の定義
-const PRODUCTS_KEY = "productsKey";
-// モックデータ
-const PRODUCTS = [
-  { id: "p1", category: "Fruits", price: 1, stocked: true, name: "Apple" },
-  {
-    id: "p2",
-    category: "Fruits",
-    price: 1,
-    stocked: true,
-    name: "DragonFruit",
-  },
-  {
-    id: "p3",
-    category: "Fruits",
-    price: 2,
-    stocked: false,
-    name: "PassionFruit",
-  },
-  {
-    id: "p4",
-    category: "Vegetables",
-    price: 2,
-    stocked: true,
-    name: "Spinach",
-  },
-  {
-    id: "p5",
-    category: "Vegetables",
-    price: 4,
-    stocked: false,
-    name: "Pumpkin",
-  },
-  {
-    id: "p6",
-    category: "Vegetables",
-    price: 1,
-    stocked: true,
-    name: "Peas",
-  },
-];
+import { PRODUCTS, PRODUCTS_KEY } from "../data/products";
 
 /**
  * 検索テキストとチェックボックスの親コンポーネントだからstateはここで管理する
