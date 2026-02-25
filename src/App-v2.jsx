@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import ProductCategoryRow from "./components/ProductCategoryRow";
 import Modal from "./components/Modal";
 import SearchBar from "./components/SearchBar";
+import ProductRow from "./components/ProductRow";
+
+// TODO: 相対パスって誰目線かによって変わるの？
+import AddProductForm from "./components/AddProductForm";
 
 // ローカルストレージのキー名の定義
 const PRODUCTS_KEY = "productsKey";
@@ -236,87 +240,87 @@ function FilterableProductTable() {
   );
 }
 
-// ここでinputされた情報を受け取る必要がある！
-/**
- * 商品追加フォームの作成、入力値を受け取る処理（UI担当）
- * @param {*} param0
- * @returns
- */
-function AddProductForm({ products, onProductsChange }) {
-  // ローカルのstateを作成する
-  const [productCategory, onProductCategoryChange] = useState("Fruits");
-  // ! この子はe.target.valueでもらってくるから、文字列がよろしい
-  const [productPrice, onProductPriceChange] = useState("");
-  const [isProductStock, onIsProductStockChange] = useState(false);
-  const [productName, onProductNameChange] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+// // ここでinputされた情報を受け取る必要がある！
+// /**
+//  * 商品追加フォームの作成、入力値を受け取る処理（UI担当）
+//  * @param {*} param0
+//  * @returns
+//  */
+// function AddProductForm({ products, onProductsChange }) {
+//   // ローカルのstateを作成する
+//   const [productCategory, onProductCategoryChange] = useState("Fruits");
+//   // ! この子はe.target.valueでもらってくるから、文字列がよろしい
+//   const [productPrice, onProductPriceChange] = useState("");
+//   const [isProductStock, onIsProductStockChange] = useState(false);
+//   const [productName, onProductNameChange] = useState("");
+//   const [errorMessage, setErrorMessage] = useState("");
 
-  // フォームを送信するときに実行する処理
-  function handleSubmit(e) {
-    // 再描画を防ぐ
-    e.preventDefault();
-    if (productPrice === "") {
-      setErrorMessage("Please enter the price");
-      return;
-    }
-    setErrorMessage(null);
-    const newProduct = {
-      id: crypto.randomUUID(),
-      category: productCategory,
-      price: Number(productPrice),
-      stocked: isProductStock,
-      name: productName,
-    };
+//   // フォームを送信するときに実行する処理
+//   function handleSubmit(e) {
+//     // 再描画を防ぐ
+//     e.preventDefault();
+//     if (productPrice === "") {
+//       setErrorMessage("Please enter the price");
+//       return;
+//     }
+//     setErrorMessage(null);
+//     const newProduct = {
+//       id: crypto.randomUUID(),
+//       category: productCategory,
+//       price: Number(productPrice),
+//       stocked: isProductStock,
+//       name: productName,
+//     };
 
-    // FilterableProductTableにわたすための一時データ
-    const newProducts = [...products, newProduct];
-    onProductsChange(newProducts);
-  }
-  // onProductsChange(newProducts);
-  return (
-    <>
-      <form onSubmit={handleSubmit}>
-        {/* セレクトはどうやって入力を受け取る？ */}
-        <select
-          name="category"
-          id="category-select"
-          value={productCategory}
-          onChange={(e) => {
-            onProductCategoryChange(e.target.value);
-          }}
-        >
-          <option value="Fruits">Fruits</option>
-          <option value="Vegetables">Vegetables</option>
-          <option value="Snacks">Snacks</option>
-        </select>
-        <input
-          type="number"
-          value={productPrice}
-          onChange={(e) => {
-            onProductPriceChange(e.target.value);
-          }}
-        />
-        <input
-          type="checkbox"
-          checked={isProductStock}
-          onChange={(e) => {
-            onIsProductStockChange(e.target.checked);
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Add..."
-          value={productName}
-          onChange={(e) => {
-            onProductNameChange(e.target.value);
-          }}
-        ></input>
-        <button type="submit">add product</button>
-      </form>
-      <p className="error-message">{errorMessage}</p>
-    </>
-  );
-}
+//     // FilterableProductTableにわたすための一時データ
+//     const newProducts = [...products, newProduct];
+//     onProductsChange(newProducts);
+//   }
+//   // onProductsChange(newProducts);
+//   return (
+//     <>
+//       <form onSubmit={handleSubmit}>
+//         {/* セレクトはどうやって入力を受け取る？ */}
+//         <select
+//           name="category"
+//           id="category-select"
+//           value={productCategory}
+//           onChange={(e) => {
+//             onProductCategoryChange(e.target.value);
+//           }}
+//         >
+//           <option value="Fruits">Fruits</option>
+//           <option value="Vegetables">Vegetables</option>
+//           <option value="Snacks">Snacks</option>
+//         </select>
+//         <input
+//           type="number"
+//           value={productPrice}
+//           onChange={(e) => {
+//             onProductPriceChange(e.target.value);
+//           }}
+//         />
+//         <input
+//           type="checkbox"
+//           checked={isProductStock}
+//           onChange={(e) => {
+//             onIsProductStockChange(e.target.checked);
+//           }}
+//         />
+//         <input
+//           type="text"
+//           placeholder="Add..."
+//           value={productName}
+//           onChange={(e) => {
+//             onProductNameChange(e.target.value);
+//           }}
+//         ></input>
+//         <button type="submit">add product</button>
+//       </form>
+//       <p className="error-message">{errorMessage}</p>
+//     </>
+//   );
+// }
 
 /**
  * 商品を表示する部分の描画を担当しているコンポーネント
@@ -422,83 +426,83 @@ function ProductTable({
   );
 }
 
-/**
- * 商品を一つずつ表示しているコンポーネント
- * @param {Object} product Products配列が持っている一つずつのオブジェクト
- * @returns
- */
-function ProductRow({
-  product,
-  handleDeleteButton,
-  editingId,
-  handleEditButton,
-  setDraftName,
-  setDraftPrice,
-  handleSaveButton,
-  handleCancelButton,
-  draftName,
-  draftPrice,
-  errorMessage,
-}) {
-  // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
-  const name = product.stocked ? (
-    product.name
-  ) : (
-    <span style={{ color: "red" }}>{product.name}</span>
-  );
+// /**
+//  * 商品を一つずつ表示しているコンポーネント
+//  * @param {Object} product Products配列が持っている一つずつのオブジェクト
+//  * @returns
+//  */
+// function ProductRow({
+//   product,
+//   handleDeleteButton,
+//   editingId,
+//   handleEditButton,
+//   setDraftName,
+//   setDraftPrice,
+//   handleSaveButton,
+//   handleCancelButton,
+//   draftName,
+//   draftPrice,
+//   errorMessage,
+// }) {
+//   // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
+//   const name = product.stocked ? (
+//     product.name
+//   ) : (
+//     <span style={{ color: "red" }}>{product.name}</span>
+//   );
 
-  if (editingId === product.id) {
-    return (
-      <>
-        <tr>
-          <td>
-            <input
-              type="text"
-              value={draftName}
-              onChange={(e) => setDraftName(e.target.value)}
-            />
-          </td>
-          <td>
-            <span>$</span>
-            <input
-              type="number"
-              value={draftPrice}
-              onChange={(e) => setDraftPrice(e.target.value)}
-            />
-          </td>
-          <td>
-            <button onClick={() => handleSaveButton(product.id)} type="button">
-              Save
-            </button>
-          </td>
-          <td>
-            <button onClick={() => handleCancelButton(product.id)}>
-              Cancel
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td className="error-message">
-            {/* 空文字だけのときに限定しないでエラーメッセージがtruthyだったら表示するほうがいい */}
-            {errorMessage ? errorMessage : null}
-          </td>
-        </tr>
-      </>
-    );
-  } else {
-    return (
-      // 1行に2列を表示する
-      <tr>
-        <td>{name}</td>
-        <td>{`$${product.price}`}</td>
-        <td>
-          <button onClick={() => handleEditButton(product.id)}>Edit</button>
-        </td>
+//   if (editingId === product.id) {
+//     return (
+//       <>
+//         <tr>
+//           <td>
+//             <input
+//               type="text"
+//               value={draftName}
+//               onChange={(e) => setDraftName(e.target.value)}
+//             />
+//           </td>
+//           <td>
+//             <span>$</span>
+//             <input
+//               type="number"
+//               value={draftPrice}
+//               onChange={(e) => setDraftPrice(e.target.value)}
+//             />
+//           </td>
+//           <td>
+//             <button onClick={() => handleSaveButton(product.id)} type="button">
+//               Save
+//             </button>
+//           </td>
+//           <td>
+//             <button onClick={() => handleCancelButton(product.id)}>
+//               Cancel
+//             </button>
+//           </td>
+//         </tr>
+//         <tr>
+//           <td className="error-message">
+//             {/* 空文字だけのときに限定しないでエラーメッセージがtruthyだったら表示するほうがいい */}
+//             {errorMessage ? errorMessage : null}
+//           </td>
+//         </tr>
+//       </>
+//     );
+//   } else {
+//     return (
+//       // 1行に2列を表示する
+//       <tr>
+//         <td>{name}</td>
+//         <td>{`$${product.price}`}</td>
+//         <td>
+//           <button onClick={() => handleEditButton(product.id)}>Edit</button>
+//         </td>
 
-        <td>
-          <button onClick={() => handleDeleteButton(product.id)}>Delete</button>
-        </td>
-      </tr>
-    );
-  }
-}
+//         <td>
+//           <button onClick={() => handleDeleteButton(product.id)}>Delete</button>
+//         </td>
+//       </tr>
+//     );
+//   }
+// }
