@@ -1,6 +1,13 @@
 /**
  * 入力するフォーム部分を描画するためのコンポーネント
- * @returns
+ * @param {Object} props
+ * @param {string} props.filterText
+ * @param {boolean} props.inStockOnly
+ * @param {string} props.filterCategory
+ * @param {(value: string) => void} props.onFilterCategoryChange
+ * @param {(value: string) => void} props.onFilterTextChange
+ * @param {(value: boolean) => void} props.onInStockOnlyChange
+ * @returns {JSX.Element} 検索画面を表示
  */
 export default function SearchBar({
   filterText,
