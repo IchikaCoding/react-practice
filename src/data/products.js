@@ -1,6 +1,19 @@
 // ローカルストレージのキー名の定義
 export const PRODUCTS_KEY = "productsKey";
 // モックデータ
+/**
+ * PRODUCTSの要素一つ分の型
+ * @typedef {Object} Product
+ * @property {string} category
+ * @property {string} id
+ * @property {string} name
+ * @property {number} price
+ * @property {boolean} stocked
+ */
+/**
+ * 「PRODUCTS は Product の配列です」
+ * @type {Product[]}
+ */
 export const PRODUCTS = [
   { id: "p1", category: "Fruits", price: 1, stocked: true, name: "Apple" },
   {

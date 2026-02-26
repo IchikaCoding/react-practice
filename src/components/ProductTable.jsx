@@ -1,15 +1,32 @@
 import ProductCategoryRow from "./ProductCategoryRow";
 import ProductRow from "./ProductRow";
 /**
- * 商品を表示する部分の描画を担当しているコンポーネント
  * @typedef {Object} Product
- * @property {string} id
  * @property {string} category
- * @property {string} price
- * @property {boolean} stocked
+ * @property {string} id
  * @property {string} name
- * @param {Product[]} products
- * @returns
+ * @property {number} price
+ * @property {boolean} stocked
+ */
+
+/**
+ * 商品を表示する部分の描画を担当しているコンポーネント
+ * @param {Object} props
+ * @param {Product[]} props.products
+ * @param {string} props.filterText
+ * @param {boolean} props.inStockOnly
+ * @param {string} props.filterCategory
+ * @param {(deleteBtnId: string) => void} props.handleDeleteButton
+ * @param {string | null} props.editingId
+ * @param {(editingBtnId: string) => void} props.handleEditButton
+ * @param {(value: string) => void} props.setDraftName
+ * @param {(value: string) => void} props.setDraftPrice
+ * @param {(value: string) => void} props.handleSaveButton
+ * @param {(value: string) => void} props.handleCancelButton
+ * @param {string} props.draftName
+ * @param {string} props.draftPrice
+ * @param {string | null} props.errorMessage
+ * @returns {JSX.Element}
  */
 export default function ProductTable({
   products,

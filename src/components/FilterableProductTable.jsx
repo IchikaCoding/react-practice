@@ -6,15 +6,13 @@ import AddProductForm from "./AddProductForm";
 import { PRODUCTS, PRODUCTS_KEY } from "../data/products";
 
 /**
- * 検索テキストとチェックボックスの親コンポーネントだからstateはここで管理する
- * @typedef {Object} Product
- * @property {string} id
- * @property {string} category
- * @property {string} price
- * @property {boolean} stocked
- * @property {string} name
- * @param {Product[]} products
- * @returns
+ * TODO: これ大丈夫？
+ * PRODUCTSの要素一つ分の型
+ * @typedef {import("../data/products").Product} Product
+ * */
+
+/**
+ * @returns {JSX.Element}
  */
 export default function FilterableProductTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,6 +26,8 @@ export default function FilterableProductTable() {
   const [errorMessage, setErrorMessage] = useState("");
   // productsをstateにして、更新もここで行われる
   // リロードされると、またモックデータで初期化される
+  // TODO: これ合っている？
+  /** @type {[Product[], Function]} */
   const [products, setProducts] = useState(() => {
     try {
       // 初回表示時にlocalStorageを確認する
