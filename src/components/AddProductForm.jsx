@@ -1,10 +1,22 @@
 import { useState } from "react";
 
 // ここでinputされた情報を受け取る必要がある！
+
+/**
+ * @typedef {Object} Product
+ * @property {string} category
+ * @property {string} id
+ * @property {string} name
+ * @property {number} price
+ * @property {boolean} stocked
+ */
+
 /**
  * 商品追加フォームの作成、入力値を受け取る処理（UI担当）
- * @param {*} param0
- * @returns
+ * @param {Object} props
+ * @param {Product[]} props.products
+ * @param {(value: Product[])=> void} props.onProductsChange
+ * @returns {JSX.Element}
  */
 export default function AddProductForm({ products, onProductsChange }) {
   // ローカルのstateを作成する

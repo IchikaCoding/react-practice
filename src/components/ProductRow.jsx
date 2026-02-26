@@ -1,7 +1,27 @@
 /**
+ * @typedef {Object} Product
+ * @property {string} category
+ * @property {string} id
+ * @property {string} name
+ * @property {number} price
+ * @property {boolean} stocked
+ */
+
+/**
  * 商品を一つずつ表示しているコンポーネント
- * @param {Object} product Products配列が持っている一つずつのオブジェクト
- * @returns
+ * @param {Object} props Products配列が持っている一つずつのオブジェクト
+ * @param {Product} props.product Products配列が持っている一つずつのオブジェクト
+ * @param {(deleteBtnId: string) => void} props.handleDeleteButton
+ * @param {string} props.editingId
+ * @param {(editingBtnId: string) => void} props.handleEditButton
+ * @param {(value: string) => void} props.setDraftName
+ * @param {(value: string) => void} props.setDraftPrice
+ * @param {(value: string)=>void} props.handleSaveButton
+ * @param {(value: string)=>void} props.handleCancelButton
+ * @param {string} props.draftName
+ * @param {string} props.draftPrice
+ * @param {string} props.errorMessage
+ * @returns {JSX.Element}
  */
 export default function ProductRow({
   product,
