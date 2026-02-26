@@ -2,7 +2,7 @@
  * カテゴリを一つずつ表示するコンポーネント
  *
  * @param {string} category
- * @returns
+ * @returns {JSX.Element} カテゴリのタイトルを表示
  */
 export default function ProductCategoryRow({ category }) {
   return (

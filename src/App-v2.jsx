@@ -2,10 +2,8 @@ import FilterableProductTable from "./components/FilterableProductTable";
 
 /**
  * FilterableProductTableがトップレベルのコンポーネント
- * propsとして{PRODUCTS}を渡している
- * @returns
+ * @returns {JSX.Element} 画面に表示
  */
 export default function App() {
-  // JSXの中でJSを書くために｛｝で囲む
   return <FilterableProductTable />;
 }

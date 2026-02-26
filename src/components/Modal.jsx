@@ -1,5 +1,13 @@
 import { useEffect } from "react";
 
+/**
+ * 削除ボタンを押したときのモーダル表示処理
+ * @param {Object} props
+ * @param {boolean} props.isModalOpen - モーダルを開くかどうか
+ * @param {() => void} props.onConfirm - OK時の処理
+ * @param {() => void} props.onCancel - キャンセル時の処理
+ * @returns {JSX.Element | null} モーダルUI（非表示時はnull）
+ */
 export default function Modal({ isModalOpen, onConfirm, onCancel }) {
   // イベントリスナー登録したい！これは画面描画以外👉️useEffectの出番！
   // TODO: これって最後に処理される？
