@@ -35,6 +35,14 @@ export default function AddProductForm({ products, onProductsChange }) {
       setErrorMessage("Please enter the price");
       return;
     }
+    // // 価格は1〜100000で入力してくださいと表示するための条件分岐を書く
+    // // priceが1より小さい、10万より大きい、数値じゃないならエラー
+    // // エラーメッセージをセットして、フォーム送信を早期リターンさせる
+    // const price = Number(productPrice);
+    // if (!Number.isFinite(price) || price < 1 || price > 100000) {
+    //   setErrorMessage("価格は1〜100000で入力してください");
+    //   return;
+    // }
     setErrorMessage(null);
     const newProduct = {
       id: crypto.randomUUID(),
@@ -60,6 +68,7 @@ export default function AddProductForm({ products, onProductsChange }) {
           onChange={(e) => {
             onProductCategoryChange(e.target.value);
           }}
+          required
         >
           <option value="Fruits">Fruits</option>
           <option value="Vegetables">Vegetables</option>
@@ -71,6 +80,9 @@ export default function AddProductForm({ products, onProductsChange }) {
           onChange={(e) => {
             onProductPriceChange(e.target.value);
           }}
+          max={100000}
+          min={1}
+          required
         />
         <input
           type="checkbox"
@@ -86,6 +98,9 @@ export default function AddProductForm({ products, onProductsChange }) {
           onChange={(e) => {
             onProductNameChange(e.target.value);
           }}
+          maxLength={30}
+          minLength={1}
+          required
         ></input>
         <button type="submit">add product</button>
       </form>

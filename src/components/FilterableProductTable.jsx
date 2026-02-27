@@ -6,8 +6,9 @@ import AddProductForm from "./AddProductForm";
 import { PRODUCTS, PRODUCTS_KEY } from "../data/products";
 
 /**
- * TODO: これ大丈夫？
  * PRODUCTSの要素一つ分の型
+ * どのパスのファイルなのかと、その中のどの型をインポートするのかを{}の中に書く
+ * {}のうしろには、このファイル内で使用したい型名を書く
  * @typedef {import("../data/products").Product} Product
  * */
 

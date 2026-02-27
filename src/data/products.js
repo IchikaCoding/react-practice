@@ -11,7 +11,7 @@ export const PRODUCTS_KEY = "productsKey";
  * @property {boolean} stocked
  */
 /**
- * 「PRODUCTS は Product の配列です」
+ * PRODUCTS変数はProduct の配列ですというJSDoc
  * @type {Product[]}
  */
 export const PRODUCTS = [
