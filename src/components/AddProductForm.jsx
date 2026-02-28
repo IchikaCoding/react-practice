@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { validationPrice } from "../validation/validation";
 
 // ここでinputされた情報を受け取る必要がある！
 
@@ -33,6 +34,11 @@ export default function AddProductForm({ products, onProductsChange }) {
     e.preventDefault();
     if (productPrice === "") {
       setErrorMessage("Please enter the price");
+      return;
+    }
+    const validationError = validationPrice(productPrice);
+    if (validationError) {
+      setErrorMessage(validationError);
       return;
     }
     // // 価格は1〜100000で入力してくださいと表示するための条件分岐を書く

@@ -4,6 +4,7 @@ import SearchBar from "./SearchBar";
 import ProductTable from "./ProductTable";
 import AddProductForm from "./AddProductForm";
 import { PRODUCTS, PRODUCTS_KEY } from "../data/products";
+import { validationPrice } from "../validation/validation";
 
 /**
  * PRODUCTSの要素一つ分の型
@@ -82,14 +83,23 @@ export default function FilterableProductTable() {
     console.log("searchProduct", searchProduct);
   }
 
-  // TODO: ここでデータの更新がうまくいっていない！→商品の値段がしっかりできていません
-  function handleSaveButton(saveBtnId) {
+  // ここでデータの更新がうまくいっていない！→商品の値段がしっかりできていません
+  function handleSaveButton(saveBtnId, nameInputEl, priceInputEl) {
     console.log("saveBtnId", saveBtnId);
-    // 値段が空欄だったら早期リターンする
-    if (draftPrice === "") {
-      setErrorMessage("Please enter the price");
+    // DOM要素に対してreportValidity()を実行する→falseならエラーってこと！
+    // validationPrice()を実行してエラーの結果を変数に入れておく
+    // reportValidity()がfalseのとき、もしくはvalidationPrice()でエラーメッセージがあったとき、
+    // エラーがあったらそれをsetErrorMessage()で更新、早期リターン
+    const isNameInputEl = nameInputEl.reportValidity();
+    const isPriceInputEl = priceInputEl.reportValidity();
+    const validationError = validationPrice(draftPrice);
+    // ! バリデーションチェック→NGならブラウザのエラー表示を出す→結果を true/false で返す
+    if (!isNameInputEl || !isPriceInputEl || validationError) {
+      // TODO: validationErrorがあるならそれ表示、空文字なら表示しない
+      setErrorMessage(validationError);
       return;
     }
+
     setErrorMessage(null);
     // 下書きからProducts自体を更新する
     // TODO: 新しく配列を作成→それで更新しないとReactが再描画してくれないかも？
