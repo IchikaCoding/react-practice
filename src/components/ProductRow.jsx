@@ -1,3 +1,4 @@
+import { useRef } from "react";
 /**
  * @typedef {Object} Product
  * @property {string} category
@@ -42,6 +43,8 @@ export default function ProductRow({
   ) : (
     <span style={{ color: "red" }}>{product.name}</span>
   );
+  const priceInputRef = useRef(null);
+  const nameInputRef = useRef(null);
 
   if (editingId === product.id) {
     return (
@@ -49,21 +52,40 @@ export default function ProductRow({
         <tr>
           <td>
             <input
+              ref={nameInputRef}
               type="text"
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
+              minLength={1}
+              maxLength={30}
+              required
             />
           </td>
           <td>
             <span>$</span>
             <input
+              // inputのDOM要素を取得するためのもの（入力内容はReactが自動更新してくれる）
+              ref={priceInputRef}
               type="number"
               value={draftPrice}
               onChange={(e) => setDraftPrice(e.target.value)}
+              min={1}
+              max={100000}
+              // 空欄もNGにしたいならこれをいれる↓
+              required
             />
           </td>
           <td>
-            <button onClick={() => handleSaveButton(product.id)} type="button">
+            <button
+              onClick={() =>
+                handleSaveButton(
+                  product.id,
+                  nameInputRef.current,
+                  priceInputRef.current,
+                )
+              }
+              type="button"
+            >
               Save
             </button>
           </td>
