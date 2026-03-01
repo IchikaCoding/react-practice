@@ -169,36 +169,47 @@ export default function FilterableProductTable() {
 
   console.log("filterCategory", filterCategory);
   return (
-    <div>
+    <div className="container">
       {/* チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
       {/* 関数を渡したのは入力値をもらって、その値でstateを更新したいから */}
-      <SearchBar
-        filterText={filterText}
-        inStockOnly={inStockOnly}
-        filterCategory={filterCategory}
-        onFilterCategoryChange={setFilterCategory}
-        onFilterTextChange={setFilterText}
-        onInStockOnlyChange={setInStockOnly}
-      />
+
+      <div className="mb-4 border border-danger p-2">
+        <h3>Search for products</h3>
+        <SearchBar
+          filterText={filterText}
+          inStockOnly={inStockOnly}
+          filterCategory={filterCategory}
+          onFilterCategoryChange={setFilterCategory}
+          onFilterTextChange={setFilterText}
+          onInStockOnlyChange={setInStockOnly}
+        />
+      </div>
+
       {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
       {/* 更新された値を使えばいいだけだからstateを更新する関数は不要 */}
-      <ProductTable
-        products={products}
-        inStockOnly={inStockOnly}
-        filterText={filterText}
-        filterCategory={filterCategory}
-        handleDeleteButton={handleDeleteButton}
-        editingId={editingId}
-        handleEditButton={handleEditButton}
-        handleSaveButton={handleSaveButton}
-        handleCancelButton={handleCancelButton}
-        draftName={draftName}
-        draftPrice={draftPrice}
-        setDraftName={setDraftName}
-        setDraftPrice={setDraftPrice}
-        errorMessage={errorMessage}
-      />
-      <AddProductForm products={products} onProductsChange={setProducts} />
+      <div className="mb-4 border border-danger p-2">
+        <h3>Product table</h3>
+        <ProductTable
+          products={products}
+          inStockOnly={inStockOnly}
+          filterText={filterText}
+          filterCategory={filterCategory}
+          handleDeleteButton={handleDeleteButton}
+          editingId={editingId}
+          handleEditButton={handleEditButton}
+          handleSaveButton={handleSaveButton}
+          handleCancelButton={handleCancelButton}
+          draftName={draftName}
+          draftPrice={draftPrice}
+          setDraftName={setDraftName}
+          setDraftPrice={setDraftPrice}
+          errorMessage={errorMessage}
+        />
+      </div>
+      <div className="mb-4 border border-danger p-2">
+        <h3>Product addition form</h3>
+        <AddProductForm products={products} onProductsChange={setProducts} />
+      </div>
       <Modal
         isModalOpen={isModalOpen}
         onConfirm={handleModalOkBtn}
