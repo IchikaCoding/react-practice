@@ -180,7 +180,6 @@ export default function FilterableProductTable() {
         onFilterTextChange={setFilterText}
         onInStockOnlyChange={setInStockOnly}
       />
-      <AddProductForm products={products} onProductsChange={setProducts} />
       {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
       {/* 更新された値を使えばいいだけだからstateを更新する関数は不要 */}
       <ProductTable
@@ -199,6 +198,7 @@ export default function FilterableProductTable() {
         setDraftPrice={setDraftPrice}
         errorMessage={errorMessage}
       />
+      <AddProductForm products={products} onProductsChange={setProducts} />
       <Modal
         isModalOpen={isModalOpen}
         onConfirm={handleModalOkBtn}

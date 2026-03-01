@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { validationPrice } from "../validation/validation";
+import {
+  validationPrice,
+  validationTrimmedName,
+} from "../validation/validation";
 
 // ここでinputされた情報を受け取る必要がある！
 
@@ -41,21 +44,20 @@ export default function AddProductForm({ products, onProductsChange }) {
       setErrorMessage(validationError);
       return;
     }
-    // // 価格は1〜100000で入力してくださいと表示するための条件分岐を書く
-    // // priceが1より小さい、10万より大きい、数値じゃないならエラー
-    // // エラーメッセージをセットして、フォーム送信を早期リターンさせる
-    // const price = Number(productPrice);
-    // if (!Number.isFinite(price) || price < 1 || price > 100000) {
-    //   setErrorMessage("価格は1〜100000で入力してください");
-    //   return;
-    // }
+    // 商品名の空白を削除する
+    const trimmedName = productName.trim();
+    const nameError = validationTrimmedName(trimmedName);
+    if (nameError) {
+      setErrorMessage(nameError);
+      return;
+    }
     setErrorMessage(null);
     const newProduct = {
       id: crypto.randomUUID(),
       category: productCategory,
       price: Number(productPrice),
       stocked: isProductStock,
-      name: productName,
+      name: trimmedName,
     };
 
     // FilterableProductTableにわたすための一時データ
