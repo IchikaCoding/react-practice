@@ -15,3 +15,12 @@ export function validationPrice(productPrice) {
   }
   return "";
 }
+
+// validationTrimmedName(trimmedName)
+// これで空白の商品名はNGであることを伝えるエラーを作成する
+export function validationTrimmedName(trimmedName) {
+  if (!trimmedName) {
+    return "商品名は空白NGです";
+  }
+  return "";
+}

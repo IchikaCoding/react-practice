@@ -4,7 +4,10 @@ import SearchBar from "./SearchBar";
 import ProductTable from "./ProductTable";
 import AddProductForm from "./AddProductForm";
 import { PRODUCTS, PRODUCTS_KEY } from "../data/products";
-import { validationPrice } from "../validation/validation";
+import {
+  validationPrice,
+  validationTrimmedName,
+} from "../validation/validation";
 
 /**
  * PRODUCTSの要素一つ分の型
@@ -100,6 +103,14 @@ export default function FilterableProductTable() {
       return;
     }
 
+    // 商品名の空白を削除する
+    const trimmedName = draftName.trim();
+    // エラーメッセージがあったらそれを変数に追加
+    const nameError = validationTrimmedName(trimmedName);
+    if (nameError) {
+      setErrorMessage(nameError);
+      return;
+    }
     setErrorMessage(null);
     // 下書きからProducts自体を更新する
     // TODO: 新しく配列を作成→それで更新しないとReactが再描画してくれないかも？
@@ -109,7 +120,7 @@ export default function FilterableProductTable() {
         // 値を更新したものだけが変更されて、それ以外はそのまま展開される。順番はもとのまま
         // mapして新しい配列を作成したいなら、その要素をreturnしないといけない！
         return item.id === saveBtnId
-          ? { ...item, name: draftName, price: Number(draftPrice) }
+          ? { ...item, name: trimmedName, price: Number(draftPrice) }
           : item;
       }),
     );
