@@ -18,51 +18,54 @@ export default function SearchBar({
   onInStockOnlyChange,
 }) {
   return (
-    <>
-      <form>
-        <label htmlFor="search-product-name">
-          Product name:{" "}
-          <input
-            id="search-product-name"
-            type="text"
-            placeholder="Search..."
-            value={filterText}
-            onChange={(e) => {
-              onFilterTextChange(e.target.value);
-            }}
-          />
+    <form>
+      <div className="mb-2">
+        <label htmlFor="search-product-name">Product name :</label>
+        <input
+          id="search-product-name"
+          type="text"
+          placeholder="Search..."
+          value={filterText}
+          onChange={(e) => {
+            onFilterTextChange(e.target.value);
+          }}
+          className="form-control"
+        />
+      </div>
+      <div className="mb-2">
+        <label htmlFor="filter-category-select">Category selector :</label>
+        {/* カテゴリのセレクト要素を入れたい */}
+        {/* valueでfilterCategoryというstateを代入しているから初期値はstateの初期値が採用される。selectedで初期値をしても意味なし！ */}
+        {/* 入力値はここで取得 */}
+        <select
+          name="filterCategory"
+          id="filter-category-select"
+          value={filterCategory}
+          onChange={(e) => {
+            onFilterCategoryChange(e.target.value);
+          }}
+          className="form-select"
+        >
+          <option value="All">All</option>
+          <option value="Fruits">Fruits</option>
+          <option value="Vegetables">Vegetables</option>
+          <option value="Snacks">Snacks</option>
+        </select>
+      </div>
+      <div className="mb-2 form-check">
+        <input
+          id="stock-checkbox"
+          type="checkbox"
+          checked={inStockOnly}
+          onChange={(e) => {
+            onInStockOnlyChange(e.target.checked);
+          }}
+          className="form-check-input"
+        />
+        <label htmlFor="stock-checkbox" className="form-check-label">
+          Only show products in stock :
         </label>
-
-        <label htmlFor="filter-category-select">
-          Category selector: {/* カテゴリのセレクト要素を入れたい */}
-          {/* valueでfilterCategoryというstateを代入しているから初期値はstateの初期値が採用される。selectedで初期値をしても意味なし！ */}
-          {/* 入力値はここで取得 */}
-          <select
-            name="filterCategory"
-            id="filter-category-select"
-            value={filterCategory}
-            onChange={(e) => {
-              onFilterCategoryChange(e.target.value);
-            }}
-          >
-            <option value="All">All</option>
-            <option value="Fruits">Fruits</option>
-            <option value="Vegetables">Vegetables</option>
-            <option value="Snacks">Snacks</option>
-          </select>
-        </label>
-        <label htmlFor="stock-checkbox">
-          Only show products in stock:{" "}
-          <input
-            id="stock-checkbox"
-            type="checkbox"
-            checked={inStockOnly}
-            onChange={(e) => {
-              onInStockOnlyChange(e.target.checked);
-            }}
-          />
-        </label>
-      </form>
-    </>
+      </div>
+    </form>
   );
 }
