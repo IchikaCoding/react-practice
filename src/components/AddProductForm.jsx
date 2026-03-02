@@ -69,50 +69,81 @@ export default function AddProductForm({ products, onProductsChange }) {
     <>
       <form onSubmit={handleSubmit}>
         {/* セレクトはどうやって入力を受け取る？ */}
-        <select
-          name="category"
-          id="category-select"
-          value={productCategory}
-          onChange={(e) => {
-            onProductCategoryChange(e.target.value);
-          }}
-          required
-        >
-          <option value="Fruits">Fruits</option>
-          <option value="Vegetables">Vegetables</option>
-          <option value="Snacks">Snacks</option>
-        </select>
-        <input
-          type="number"
-          value={productPrice}
-          onChange={(e) => {
-            onProductPriceChange(e.target.value);
-          }}
-          max={100000}
-          min={1}
-          required
-        />
-        <input
-          type="checkbox"
-          checked={isProductStock}
-          onChange={(e) => {
-            onIsProductStockChange(e.target.checked);
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Add..."
-          value={productName}
-          onChange={(e) => {
-            onProductNameChange(e.target.value);
-          }}
-          maxLength={30}
-          minLength={1}
-          required
-        ></input>
-        <button type="submit">add product</button>
+        <div className="mb-3">
+          {/* ラベルにもclassName="form-label"があるとラベルとinputの隙間が整う */}
+          <label htmlFor="category-select" className="form-label">
+            Category
+          </label>
+          <select
+            name="category"
+            id="category-select"
+            value={productCategory}
+            onChange={(e) => {
+              onProductCategoryChange(e.target.value);
+            }}
+            required
+            className="form-select"
+          >
+            <option value="Fruits">Fruits</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Snacks">Snacks</option>
+          </select>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="product-price" className="form-label">
+            Product Price
+          </label>
+          <input
+            type="number"
+            value={productPrice}
+            onChange={(e) => {
+              onProductPriceChange(e.target.value);
+            }}
+            max={100000}
+            min={1}
+            required
+            className="form-control"
+            id="product-price"
+          />
+        </div>
+        <div className="form-check mb-3">
+          <input
+            type="checkbox"
+            checked={isProductStock}
+            onChange={(e) => {
+              onIsProductStockChange(e.target.checked);
+            }}
+            className="form-check-input"
+            id="add-stock-checkbox"
+          />
+          {/* チェックボックスのときのラベルはform-check-label */}
+          <label htmlFor="add-stock-checkbox" className="form-check-label">
+            Do you have these items in stock?
+          </label>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="product-name" className="form-label">
+            Product name
+          </label>
+          <input
+            type="text"
+            placeholder="Add..."
+            value={productName}
+            onChange={(e) => {
+              onProductNameChange(e.target.value);
+            }}
+            maxLength={30}
+            minLength={1}
+            required
+            className="form-control"
+            id="product-name"
+          ></input>
+        </div>
+        <p className="error-message text-danger">{errorMessage}</p>
+        <button type="submit" className="btn btn-primary mb-3">
+          add product
+        </button>
       </form>
-      <p className="error-message">{errorMessage}</p>
     </>
   );
 }

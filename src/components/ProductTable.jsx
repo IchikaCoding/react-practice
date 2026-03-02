@@ -106,13 +106,13 @@ export default function ProductTable({
 
   console.log("rows", rows);
   return (
-    <table>
-      <thead>
+    <table className="table table-striped table-hover align-middle">
+      <thead className="table-light">
         <tr>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Edit</th>
-          <th>Delete</th>
+          <th style={{ width: "30%" }}>Name</th>
+          <th style={{ width: "35%" }}>Price</th>
+          <th style={{ width: "17.5%" }}>Edit</th>
+          <th style={{ width: "17.5%" }}>Delete</th>
         </tr>
       </thead>
       {/* JSXの要素の配列はReactが展開して、順番に表示してくれるらしい！！ */}

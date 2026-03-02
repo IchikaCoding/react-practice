@@ -59,21 +59,26 @@ export default function ProductRow({
               minLength={1}
               maxLength={30}
               required
+              className="form-control"
             />
           </td>
-          <td>
-            <span>$</span>
-            <input
-              // inputのDOM要素を取得するためのもの（入力内容はReactが自動更新してくれる）
-              ref={priceInputRef}
-              type="number"
-              value={draftPrice}
-              onChange={(e) => setDraftPrice(e.target.value)}
-              min={1}
-              max={100000}
-              // 空欄もNGにしたいならこれをいれる↓
-              required
-            />
+          {/* w-30にすると編集時だけ価格のセルの横幅を大きくできる */}
+          <td className="w-30">
+            <div className="input-group">
+              <span className="input-group-text">$</span>
+              <input
+                // inputのDOM要素を取得するためのもの（入力内容はReactが自動更新してくれる）
+                ref={priceInputRef}
+                type="number"
+                value={draftPrice}
+                onChange={(e) => setDraftPrice(e.target.value)}
+                min={1}
+                max={100000}
+                // 空欄もNGにしたいならこれをいれる↓
+                required
+                className="form-control"
+              />
+            </div>
           </td>
           <td>
             <button
@@ -85,12 +90,16 @@ export default function ProductRow({
                 )
               }
               type="button"
+              className="btn btn-success"
             >
               Save
             </button>
           </td>
           <td>
-            <button onClick={() => handleCancelButton(product.id)}>
+            <button
+              onClick={() => handleCancelButton(product.id)}
+              className="btn btn-secondary"
+            >
               Cancel
             </button>
           </td>
@@ -110,11 +119,21 @@ export default function ProductRow({
         <td>{name}</td>
         <td>{`$${product.price}`}</td>
         <td>
-          <button onClick={() => handleEditButton(product.id)}>Edit</button>
+          <button
+            onClick={() => handleEditButton(product.id)}
+            className="btn btn-primary"
+          >
+            Edit
+          </button>
         </td>
 
         <td>
-          <button onClick={() => handleDeleteButton(product.id)}>Delete</button>
+          <button
+            onClick={() => handleDeleteButton(product.id)}
+            className="btn btn-danger"
+          >
+            Delete
+          </button>
         </td>
       </tr>
     );

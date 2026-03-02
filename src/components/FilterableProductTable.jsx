@@ -173,42 +173,49 @@ export default function FilterableProductTable() {
       {/* チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
       {/* 関数を渡したのは入力値をもらって、その値でstateを更新したいから */}
 
-      <div className="mb-4 border border-danger p-2">
-        <h3>Search for products</h3>
-        <SearchBar
-          filterText={filterText}
-          inStockOnly={inStockOnly}
-          filterCategory={filterCategory}
-          onFilterCategoryChange={setFilterCategory}
-          onFilterTextChange={setFilterText}
-          onInStockOnlyChange={setInStockOnly}
-        />
+      <div className="mb-4 card">
+        <div className="card-body">
+          <h3 className="card-title mb-3">Search for products</h3>
+          <SearchBar
+            filterText={filterText}
+            inStockOnly={inStockOnly}
+            filterCategory={filterCategory}
+            onFilterCategoryChange={setFilterCategory}
+            onFilterTextChange={setFilterText}
+            onInStockOnlyChange={setInStockOnly}
+          />
+        </div>
       </div>
 
       {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
       {/* 更新された値を使えばいいだけだからstateを更新する関数は不要 */}
-      <div className="mb-4 border border-danger p-2">
-        <h3>Product table</h3>
-        <ProductTable
-          products={products}
-          inStockOnly={inStockOnly}
-          filterText={filterText}
-          filterCategory={filterCategory}
-          handleDeleteButton={handleDeleteButton}
-          editingId={editingId}
-          handleEditButton={handleEditButton}
-          handleSaveButton={handleSaveButton}
-          handleCancelButton={handleCancelButton}
-          draftName={draftName}
-          draftPrice={draftPrice}
-          setDraftName={setDraftName}
-          setDraftPrice={setDraftPrice}
-          errorMessage={errorMessage}
-        />
+      <div className="mb-4 card">
+        <div className="card-body">
+          <h3 className="card-title mb-3">Product table</h3>
+          <ProductTable
+            products={products}
+            inStockOnly={inStockOnly}
+            filterText={filterText}
+            filterCategory={filterCategory}
+            handleDeleteButton={handleDeleteButton}
+            editingId={editingId}
+            handleEditButton={handleEditButton}
+            handleSaveButton={handleSaveButton}
+            handleCancelButton={handleCancelButton}
+            draftName={draftName}
+            draftPrice={draftPrice}
+            setDraftName={setDraftName}
+            setDraftPrice={setDraftPrice}
+            errorMessage={errorMessage}
+          />
+        </div>
       </div>
-      <div className="mb-4 border border-danger p-2">
-        <h3>Product addition form</h3>
-        <AddProductForm products={products} onProductsChange={setProducts} />
+      {/* ここから、Form周りのJSXを書く。AddProductFormコンポーネントはFormだけ描画にしておく */}
+      <div className="mb-4 card">
+        <div className="card-body">
+          <h3 className="card-title mb-3">Product addition form</h3>
+          <AddProductForm products={products} onProductsChange={setProducts} />
+        </div>
       </div>
       <Modal
         isModalOpen={isModalOpen}

@@ -19,8 +19,10 @@ export default function SearchBar({
 }) {
   return (
     <form>
-      <div className="mb-2">
-        <label htmlFor="search-product-name">Product name :</label>
+      <div className="mb-3">
+        <label htmlFor="search-product-name" className="form-label">
+          Product name :
+        </label>
         <input
           id="search-product-name"
           type="text"
@@ -32,8 +34,10 @@ export default function SearchBar({
           className="form-control"
         />
       </div>
-      <div className="mb-2">
-        <label htmlFor="filter-category-select">Category selector :</label>
+      <div className="mb-3">
+        <label htmlFor="filter-category-select" className="form-label">
+          Category selector :
+        </label>
         {/* カテゴリのセレクト要素を入れたい */}
         {/* valueでfilterCategoryというstateを代入しているから初期値はstateの初期値が採用される。selectedで初期値をしても意味なし！ */}
         {/* 入力値はここで取得 */}
@@ -52,7 +56,7 @@ export default function SearchBar({
           <option value="Snacks">Snacks</option>
         </select>
       </div>
-      <div className="mb-2 form-check">
+      <div className="mb-3 form-check">
         <input
           id="stock-checkbox"
           type="checkbox"
