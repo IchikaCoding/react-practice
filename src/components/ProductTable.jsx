@@ -106,17 +106,20 @@ export default function ProductTable({
 
   console.log("rows", rows);
   return (
-    <table className="table table-striped table-hover align-middle">
-      <thead className="table-light">
-        <tr>
-          <th style={{ width: "30%" }}>Name</th>
-          <th style={{ width: "35%" }}>Price</th>
-          <th style={{ width: "17.5%" }}>Edit</th>
-          <th style={{ width: "17.5%" }}>Delete</th>
-        </tr>
-      </thead>
-      {/* JSXの要素の配列はReactが展開して、順番に表示してくれるらしい！！ */}
-      <tbody>{rows}</tbody>
-    </table>
+    // table-responsiveでスマホ（細い画面）でも横スクロールを可能にする
+    <div className="table-responsive">
+      <table className="table table-striped table-hover align-middle">
+        <thead className="table-light">
+          <tr>
+            <th style={{ width: "25%" }}>Name</th>
+            <th style={{ width: "25%" }}>Price</th>
+            <th style={{ width: "25%" }}>Edit</th>
+            <th style={{ width: "25%" }}>Delete</th>
+          </tr>
+        </thead>
+        {/* JSXの要素の配列はReactが展開して、順番に表示してくれるらしい！！ */}
+        <tbody>{rows}</tbody>
+      </table>
+    </div>
   );
 }

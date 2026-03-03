@@ -104,12 +104,15 @@ export default function ProductRow({
             </button>
           </td>
         </tr>
-        <tr>
-          <td className="error-message">
-            {/* 空文字だけのときに限定しないでエラーメッセージがtruthyだったら表示するほうがいい */}
-            {errorMessage ? errorMessage : null}
-          </td>
-        </tr>
+        {/* エラーメッセージがtruthyだったら表示する(空文字だけのときに限定しないようにした) */}
+        {errorMessage ? (
+          <tr>
+            {/* colspanをつけてセル4つ分を使用するようにしました */}
+            <td className="error-message text-danger" colSpan={4}>
+              {errorMessage}
+            </td>
+          </tr>
+        ) : null}
       </>
     );
   } else {

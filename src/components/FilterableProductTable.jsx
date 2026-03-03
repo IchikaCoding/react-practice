@@ -130,6 +130,8 @@ export default function FilterableProductTable() {
   function handleCancelButton(cancelBtnId) {
     console.log("cancelBtnId", cancelBtnId);
     setEditingId(null);
+    // 一回編集ボタンを押したあとにキャンセルしたらエラーメッセージはリセット
+    setErrorMessage(null);
   }
 
   function handleDeleteButton(deleteBtnId) {
