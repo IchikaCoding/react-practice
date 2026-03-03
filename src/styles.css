@@ -90,32 +90,3 @@ body {
 .game-info {
   margin-left: 20px;
 }
-
-.modal-overlay {
-  /* スクロールしても画面を固定する処理 */
-  position: fixed;
-  /* top: 0; right: 0; bottom: 0; left: 0; の省略。全画面表示になる */
-  inset: 0;
-  /* 0.5 は半透明（50%）。 */
-  background-color: rgba(54, 3, 3, 0.5);
-  /* ? 配置のルールをグリッドにする */
-  display: grid;
-  /* ダイアログを縦も横も中央に置く */
-  place-items: center;
-  /* モーダルの親要素にz-indexを大きく指定しておく👉️子要素は親より前に表示される */
-  z-index: 1000;
-}
-
-.modal-dialog {
-  background-color: #f3bb84;
-  /* 中の余白。単位が必要 */
-  /* 2つだけ大きさを指定した場合、上下と左右の比率で指定できる */
-  padding: 20px 50px;
-  /* 角の丸み */
-  border-radius: 16px;
-  /* ? ダイアログの影 */
-  box-shadow: 0 16px 30px rgba(0, 0, 0);
-  /* 幅の指定。最小の画面では90%, 最大の大きさは420px */
-  width: min(90vw, 420px);
-  /* height: min(90vw, 420px); */
-}
