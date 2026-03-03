@@ -35,12 +35,17 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
   // returnされるもの
   return (
     <>
+      {/* .modal自体の標準はdisplay: none;（非表示寄り）。だからd-blockは表示するやつをつける*/}
       <div
-        className="modal d-block"
+        // fade: アニメーション用の「初期状態」（透明 or ずらし）
+        // show: 表示状態にするクラス（fade とセットで使う）
+        className="modal d-block fade show"
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
         onClick={onCancel}
+        // modal-titleのidと同じ名前をつけておくとアクセシビリティ的にGoodなの？
+        aria-labelledby="ModalLabel"
       >
         {/* モーダル画面をだしているときに暗くなる背景の部分。ここをクリックするとキャンセルされる */}
         {/* e.stopPropagation()でダイアログ画面の内側のクリックを外側に伝えないようにしている */}
@@ -54,7 +59,10 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
       */}
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Confirm delete</h5>
+              {/* ページ本文でh1使っている場合、見出しの階層を壊しにくくするためにh2~3くらいにするのがよいらしい */}
+              <h2 className="modal-title" id="ModalLabel">
+                Confirm delete
+              </h2>
               <button
                 type="button"
                 className="btn-close"
@@ -75,14 +83,17 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
               <button
                 type="button"
                 onClick={onConfirm}
-                className="btn btn-primary"
+                className="btn btn-danger"
               >
-                OK
+                Delete
               </button>
             </div>
           </div>
         </div>
       </div>
+      {/* TODO: fade, showをつけないと真っ暗になるのはどうして？ */}
+      {/* これはモーダル開いたときに暗くする背景レイヤー。モーダルの要素とは別でdiv要素を作成している */}
+      <div className="modal-backdrop fade show"></div>
     </>
   );
 }
