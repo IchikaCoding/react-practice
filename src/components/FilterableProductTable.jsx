@@ -27,8 +27,10 @@ export default function FilterableProductTable() {
   // 編集中の商品名と価格は下書きstate変数に入れておく
   const [draftName, setDraftName] = useState("");
   const [draftPrice, setDraftPrice] = useState("");
+  const [draftStocked, setDraftStocked] = useState(false);
   // 商品の値段が空欄だったときに表示するためのエラーメッセージstate
   const [errorMessage, setErrorMessage] = useState("");
+
   // productsをstateにして、更新もここで行われる
   // リロードされると、またモックデータで初期化される
   // TODO: これ合っている？
@@ -82,6 +84,7 @@ export default function FilterableProductTable() {
     setDraftName(searchProduct.name);
     // TODO: ＄をなくす処理を入れるべき？
     setDraftPrice(searchProduct.price.toString());
+    setDraftStocked(searchProduct.stocked);
     console.log("draftPrice", Number.isFinite(draftPrice));
     console.log("searchProduct", searchProduct);
   }
@@ -89,6 +92,11 @@ export default function FilterableProductTable() {
   // ここでデータの更新がうまくいっていない！→商品の値段がしっかりできていません
   function handleSaveButton(saveBtnId, nameInputEl, priceInputEl) {
     console.log("saveBtnId", saveBtnId);
+    // ! input要素が取得出来なかった場合、reportValidity()の前にnullのガードを入れておくと安心
+    if (!nameInputEl || !priceInputEl) {
+      setErrorMessage("入力欄のHTML要素が取得出来ませんでした");
+      return;
+    }
     // DOM要素に対してreportValidity()を実行する→falseならエラーってこと！
     // validationPrice()を実行してエラーの結果を変数に入れておく
     // reportValidity()がfalseのとき、もしくはvalidationPrice()でエラーメッセージがあったとき、
@@ -120,7 +128,12 @@ export default function FilterableProductTable() {
         // 値を更新したものだけが変更されて、それ以外はそのまま展開される。順番はもとのまま
         // mapして新しい配列を作成したいなら、その要素をreturnしないといけない！
         return item.id === saveBtnId
-          ? { ...item, name: trimmedName, price: Number(draftPrice) }
+          ? {
+              ...item,
+              name: trimmedName,
+              price: Number(draftPrice),
+              stocked: draftStocked,
+            }
           : item;
       }),
     );
@@ -172,6 +185,9 @@ export default function FilterableProductTable() {
   console.log("filterCategory", filterCategory);
   return (
     <div className="container">
+      <div>
+        <h1>Product inventory management app</h1>
+      </div>
       {/* チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
       {/* 関数を渡したのは入力値をもらって、その値でstateを更新したいから */}
 
@@ -206,8 +222,10 @@ export default function FilterableProductTable() {
             handleCancelButton={handleCancelButton}
             draftName={draftName}
             draftPrice={draftPrice}
+            draftStocked={draftStocked}
             setDraftName={setDraftName}
             setDraftPrice={setDraftPrice}
+            setDraftStocked={setDraftStocked}
             errorMessage={errorMessage}
           />
         </div>

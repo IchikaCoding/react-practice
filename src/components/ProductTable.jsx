@@ -21,10 +21,12 @@ import ProductRow from "./ProductRow";
  * @param {(editingBtnId: string) => void} props.handleEditButton
  * @param {(value: string) => void} props.setDraftName
  * @param {(value: string) => void} props.setDraftPrice
+ * @param {(value: boolean) => void} props.setDraftStocked
  * @param {(value: string) => void} props.handleSaveButton
  * @param {(value: string) => void} props.handleCancelButton
  * @param {string} props.draftName
  * @param {string} props.draftPrice
+ * @param {boolean} props.draftStocked
  * @param {string | null} props.errorMessage
  * @returns {JSX.Element}
  */
@@ -40,8 +42,10 @@ export default function ProductTable({
   handleCancelButton,
   setDraftName,
   setDraftPrice,
+  setDraftStocked,
   draftName,
   draftPrice,
+  draftStocked,
   errorMessage,
 }) {
   // カテゴリと商品の情報をいれるための配列
@@ -95,8 +99,10 @@ export default function ProductTable({
         handleCancelButton={handleCancelButton}
         setDraftName={setDraftName}
         setDraftPrice={setDraftPrice}
+        setDraftStocked={setDraftStocked}
         draftName={draftName}
         draftPrice={draftPrice}
+        draftStocked={draftStocked}
         errorMessage={errorMessage}
       />,
     );

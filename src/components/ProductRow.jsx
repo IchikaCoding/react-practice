@@ -17,10 +17,12 @@ import { useRef } from "react";
  * @param {(editingBtnId: string) => void} props.handleEditButton
  * @param {(value: string) => void} props.setDraftName
  * @param {(value: string) => void} props.setDraftPrice
- * @param {(value: string)=>void} props.handleSaveButton
+ * @param {(value: boolean) => void} props.setDraftStocked
+ * @param {(saveBtnId: string, nameInputEl: HTMLInputElement | null, priceInputEl: HTMLInputElement | null)=>void} props.handleSaveButton
  * @param {(value: string)=>void} props.handleCancelButton
  * @param {string} props.draftName
  * @param {string} props.draftPrice
+ * @param {boolean} props.draftStocked
  * @param {string | null} props.errorMessage
  * @returns {JSX.Element}
  */
@@ -31,10 +33,12 @@ export default function ProductRow({
   handleEditButton,
   setDraftName,
   setDraftPrice,
+  setDraftStocked,
   handleSaveButton,
   handleCancelButton,
   draftName,
   draftPrice,
+  draftStocked,
   errorMessage,
 }) {
   // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
@@ -51,6 +55,13 @@ export default function ProductRow({
       <>
         <tr>
           <td>
+            <input
+              type="checkbox"
+              id={`is-stocked-${product.id}`}
+              checked={draftStocked}
+              onChange={(e) => setDraftStocked(e.target.checked)}
+            />
+            <label htmlFor={`is-stocked-${product.id}`}>In stock?</label>
             <input
               ref={nameInputRef}
               type="text"

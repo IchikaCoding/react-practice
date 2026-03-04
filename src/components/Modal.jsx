@@ -43,6 +43,7 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
+        // これつけることで、ダイアログの外側をクリックしたら閉じる
         onClick={onCancel}
         // modal-titleのidと同じ名前をつけておくとアクセシビリティ的にGoodなの？
         aria-labelledby="ModalLabel"
@@ -77,6 +78,7 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
                 type="button"
                 onClick={onCancel}
                 className="btn btn-secondary"
+                aria-label="close"
               >
                 Cancel
               </button>
@@ -91,9 +93,9 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
           </div>
         </div>
       </div>
-      {/* TODO: fade, showをつけないと真っ暗になるのはどうして？ */}
+      {/* fadeはアニメーションの仕組みを担当。モーダルにshowをつけると、表示状態のスタイル（背景色とか濃さとか）などを調整してくれる */}
       {/* これはモーダル開いたときに暗くする背景レイヤー。モーダルの要素とは別でdiv要素を作成している */}
-      <div className="modal-backdrop fade show"></div>
+      <div className="modal-backdrop show"></div>
     </>
   );
 }
