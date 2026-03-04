@@ -116,7 +116,7 @@ export default function ProductTable({
     <div className="table-responsive">
       <table className="table table-striped table-hover align-middle">
         <thead className="table-light">
-          <tr>
+          <tr className="table table-secondary">
             <th style={{ width: "25%" }}>Name</th>
             <th style={{ width: "25%" }}>Price</th>
             <th style={{ width: "25%" }}>Edit</th>

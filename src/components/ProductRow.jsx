@@ -130,7 +130,16 @@ export default function ProductRow({
     return (
       // 1行に2列を表示する
       <tr>
-        <td>{name}</td>
+        <td>
+          {/* TODO: このバッチかわいくない。。。 */}
+          <div className="d-flex flex-column">
+            <span className="badge rounded-pill text-bg-warning">
+              {product.category}
+            </span>
+            <span>{name}</span>
+          </div>
+        </td>
+
         <td>{`$${product.price}`}</td>
         <td>
           <button
