@@ -117,10 +117,14 @@ export default function ProductTable({
       <table className="table table-striped table-hover align-middle">
         <thead className="table-light">
           <tr className="table table-secondary">
-            <th style={{ width: "25%" }}>Name</th>
-            <th style={{ width: "25%" }}>Price</th>
-            <th style={{ width: "25%" }}>Edit</th>
-            <th style={{ width: "25%" }}>Delete</th>
+            <th style={{ width: "37.5%" }}>Name</th>
+            <th style={{ width: "37.5%" }}>Price</th>
+            <th style={{ width: "12.5%" }} className="px-1">
+              Edit
+            </th>
+            <th style={{ width: "12.5%" }} className="px-1">
+              Delete
+            </th>
           </tr>
         </thead>
         {/* JSXの要素の配列はReactが展開して、順番に表示してくれるらしい！！ */}

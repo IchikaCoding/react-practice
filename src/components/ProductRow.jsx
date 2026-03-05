@@ -155,19 +155,18 @@ export default function ProductRow({
         </td>
 
         <td>{`$${product.price}`}</td>
-        <td>
+        <td className="px-1">
           <button
             onClick={() => handleEditButton(product.id)}
-            className="btn btn-primary"
+            className="btn btn-primary w-100"
           >
             Edit
           </button>
         </td>
-
-        <td>
+        <td className="px-1">
           <button
             onClick={() => handleDeleteButton(product.id)}
-            className="btn btn-danger"
+            className="btn btn-danger w-100"
           >
             Delete
           </button>
