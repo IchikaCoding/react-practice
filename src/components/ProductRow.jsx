@@ -49,6 +49,14 @@ export default function ProductRow({
   );
   const priceInputRef = useRef(null);
   const nameInputRef = useRef(null);
+  // カテゴリ別で色を指定したオブジェクトを用意する
+  // それのproductのカテゴリに一致する色を変数に入れて置く
+  const categoryClassMap = {
+    Fruits: "text-bg-warning",
+    Vegetables: "text-bg-success",
+    Snacks: "text-bg-danger",
+  };
+  const badgeTextBg = categoryClassMap[product.category] ?? "text-bg-secondary";
 
   if (editingId === product.id) {
     return (
@@ -131,9 +139,15 @@ export default function ProductRow({
       // 1行に2列を表示する
       <tr>
         <td>
-          {/* TODO: このバッチかわいくない。。。 */}
-          <div className="d-flex flex-column">
-            <span className="badge rounded-pill text-bg-warning">
+          {/* TODO: このバッジかわいくない。。。 */}
+          {/* d-flex flex-columnの意味を調べる */}
+          {/* flex-columnは子要素を縦並びにする */}
+          <div className="d-inline-flex flex-column">
+            {/* align-self-start = 「この子だけ横に伸ばさず、カテゴリの文字の分だけの幅にして左寄せで置く」 */}
+            {/* バッジの色を変数に入れて、それをクラス名として使用する */}
+            <span
+              className={`badge rounded-pill align-self-start ${badgeTextBg}`}
+            >
               {product.category}
             </span>
             <span>{name}</span>
