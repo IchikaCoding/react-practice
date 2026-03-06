@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "bootstrap/dist/css/bootstrap.min.css";
 // BootStrapのあとに独自CSSをつけることでBootStrapで上書きされないようにする
-import "./styles.css";
+// import "./styles.css";
 
 import App from "./App-v2";
 // import App from "./App";

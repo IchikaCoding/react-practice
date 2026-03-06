@@ -63,31 +63,49 @@ export default function ProductRow({
       <>
         <tr>
           <td>
-            <input
-              type="checkbox"
-              id={`is-stocked-${product.id}`}
-              checked={draftStocked}
-              onChange={(e) => setDraftStocked(e.target.checked)}
-            />
-            <label htmlFor={`is-stocked-${product.id}`}>In stock?</label>
-            <input
-              ref={nameInputRef}
-              type="text"
-              value={draftName}
-              onChange={(e) => setDraftName(e.target.value)}
-              minLength={1}
-              maxLength={30}
-              required
-              className="form-control"
-            />
+            <div className="mb-2">
+              {/* 「入力値」を入れるのは不適切です（空文字にもなるし、読み上げ名が毎回変わる） */}
+              <input
+                aria-label="Product name"
+                ref={nameInputRef}
+                type="text"
+                value={draftName}
+                onChange={(e) => setDraftName(e.target.value)}
+                minLength={1}
+                maxLength={30}
+                required
+                name="productName"
+                className="form-control"
+                id={`name-input-${product.id}`}
+              />
+            </div>
+            <div className="form-check ps-4.5">
+              {/* ラベルがあるのでこのinput要素にはaria-label属性は不要 */}
+              <input
+                name="stockedCheckbox"
+                type="checkbox"
+                id={`is-stocked-${product.id}`}
+                checked={draftStocked}
+                onChange={(e) => setDraftStocked(e.target.checked)}
+                className="form-check-input"
+              />
+              <label
+                htmlFor={`is-stocked-${product.id}`}
+                className="form-check-label"
+              >
+                In stock?
+              </label>
+            </div>
           </td>
-          {/* w-30にすると編集時だけ価格のセルの横幅を大きくできる */}
-          <td className="w-30">
+
+          <td>
             <div className="input-group">
               <span className="input-group-text">$</span>
               <input
                 // inputのDOM要素を取得するためのもの（入力内容はReactが自動更新してくれる）
                 ref={priceInputRef}
+                name="productPrice"
+                aria-label="Product price"
                 type="number"
                 value={draftPrice}
                 onChange={(e) => setDraftPrice(e.target.value)}
@@ -96,10 +114,14 @@ export default function ProductRow({
                 // 空欄もNGにしたいならこれをいれる↓
                 required
                 className="form-control"
+                id={`price-input-${product.id}`}
               />
             </div>
           </td>
           <td>
+            {/* ボタン要素の中にテキストがあるならそれが読み上げになるので、
+            テキストがある場合はラベルが不要になる。
+            SVGとかテキストでないボタンならaria-label 属性を使用しておくとよい */}
             <button
               onClick={() =>
                 handleSaveButton(

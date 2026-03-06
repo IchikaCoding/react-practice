@@ -65,6 +65,7 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
                 Confirm delete
               </h2>
               <button
+                aria-label="closeButton"
                 type="button"
                 className="btn-close"
                 onClick={onCancel}

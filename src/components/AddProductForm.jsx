@@ -93,21 +93,26 @@ export default function AddProductForm({ products, onProductsChange }) {
           <label htmlFor="product-price" className="form-label">
             Product Price
           </label>
-          <input
-            type="number"
-            value={productPrice}
-            onChange={(e) => {
-              onProductPriceChange(e.target.value);
-            }}
-            max={100000}
-            min={1}
-            required
-            className="form-control"
-            id="product-price"
-          />
+          <div className="input-group">
+            <span className="input-group-text">$</span>
+            <input
+              name="productPrice"
+              type="number"
+              value={productPrice}
+              onChange={(e) => {
+                onProductPriceChange(e.target.value);
+              }}
+              max={100000}
+              min={1}
+              required
+              className="form-control"
+              id="product-price"
+            />
+          </div>
         </div>
         <div className="form-check mb-3">
           <input
+            name="stockedCheckbox"
             type="checkbox"
             checked={isProductStock}
             onChange={(e) => {
@@ -126,6 +131,7 @@ export default function AddProductForm({ products, onProductsChange }) {
             Product name
           </label>
           <input
+            name="productName"
             type="text"
             placeholder="Add..."
             value={productName}
