@@ -155,7 +155,7 @@ export default function ProductRow({
         </td>
 
         <td>{`$${product.price}`}</td>
-        <td className="px-3">
+        <td className="text-start">
           <button
             onClick={() => handleEditButton(product.id)}
             className="btn btn-primary w-100"
@@ -163,7 +163,7 @@ export default function ProductRow({
             Edit
           </button>
         </td>
-        <td className="px-3">
+        <td className="text-start">
           <button
             onClick={() => handleDeleteButton(product.id)}
             className="btn btn-danger w-100"

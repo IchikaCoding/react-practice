@@ -114,7 +114,8 @@ export default function ProductTable({
   return (
     // table-responsiveでスマホ（細い画面）でも横スクロールを可能にする
     <div className="table-responsive">
-      <table className="table table-striped table-hover align-middle">
+      {/* align-middleでvertical-align: middle;が当たる。つまり、テーブルについていたら、その中のth,tdはセルの垂直方向の真ん中に表示するってこと */}
+      <table className="table table-striped table-hover align-top">
         <thead className="table-light">
           <tr className="table table-secondary">
             <th style={{ width: "37.5%" }}>Name</th>
@@ -128,7 +129,7 @@ export default function ProductTable({
           </tr>
         </thead>
         {/* JSXの要素の配列はReactが展開して、順番に表示してくれるらしい！！ */}
-        <tbody>{rows}</tbody>
+        <tbody className="align-top">{rows}</tbody>
       </table>
     </div>
   );
