@@ -149,6 +149,7 @@ export default function FilterableProductTable() {
   }
 
   function handleDeleteButton(deleteBtnId) {
+    // delete押す直前にフォーカスが当たっているHTML要素を代入してそれを保存しておく
     lastFocusedRef.current = document.activeElement;
     console.log("lastFocusedRef", lastFocusedRef);
     setIsModalOpen(true);
@@ -163,6 +164,14 @@ export default function FilterableProductTable() {
       setIsModalOpen(false);
       return;
     }
+    // TODO: productsの中身を調べて、currentProductIndexがあっているのか確認する
+    console.log("products", products);
+    // TODO: フォーカスを次の行へ移動
+    // deleteBtnIdから商品のインデックスを取得する方法
+    const currentProductIndex = products.findIndex(
+      (product) => product.id === deleteBtnId,
+    );
+    console.log("currentProductIndex", currentProductIndex);
     // productsのコピーをprevとして作成。その配列から1つずつ要素を取得する
     // その要素のIDとdeleteBtnIdが一致していたら削除できる
     setProducts((prev) => prev.filter((product) => product.id !== deleteBtnId));
