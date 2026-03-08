@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Modal from "./Modal";
 import SearchBar from "./SearchBar";
 import ProductTable from "./ProductTable";
@@ -21,6 +21,7 @@ import {
  */
 export default function FilterableProductTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const lastFocusedRef = useRef(null);
   const [deleteBtnId, setDeleteBtnId] = useState(null);
   // 編集中かどうかを管理するためのState変数。IDで管理する
   const [editingId, setEditingId] = useState(null);
@@ -148,10 +149,13 @@ export default function FilterableProductTable() {
   }
 
   function handleDeleteButton(deleteBtnId) {
+    lastFocusedRef.current = document.activeElement;
+    console.log("lastFocusedRef", lastFocusedRef);
     setIsModalOpen(true);
     setDeleteBtnId(deleteBtnId);
   }
-  // モーダル画面のOKボタンが押されたときの処理
+  // モーダル画面のdeleteボタンが押されたときの処理
+  // TODO: Okはややこしいかも？
   function handleModalOkBtn() {
     // deleteBtnIdがnullのときは削除を実行しないというガード
     if (!deleteBtnId) {
@@ -163,6 +167,7 @@ export default function FilterableProductTable() {
     // その要素のIDとdeleteBtnIdが一致していたら削除できる
     setProducts((prev) => prev.filter((product) => product.id !== deleteBtnId));
     setIsModalOpen(false);
+    // Deleteボタンの
     // deleteした後はDeleteボタンのIDはリセットしたいからnullをいれる
     setDeleteBtnId(null);
   }
@@ -241,6 +246,7 @@ export default function FilterableProductTable() {
         isModalOpen={isModalOpen}
         onConfirm={handleModalOkBtn}
         onCancel={handleModalCancelBtn}
+        lastFocusedRef={lastFocusedRef}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * 削除ボタンを押したときのモーダル表示処理
@@ -6,9 +6,18 @@ import { useEffect } from "react";
  * @param {boolean} props.isModalOpen - モーダルを開くかどうか
  * @param {() => void} props.onConfirm - OK時の処理
  * @param {() => void} props.onCancel - キャンセル時の処理
+ * @param {HTMLElement | null} props.lastFocusedRef - モーダル開く前にフォーカスが当たっていたHTML要素
  * @returns {JSX.Element | null} モーダルUI（非表示時はnull）
  */
-export default function Modal({ isModalOpen, onConfirm, onCancel }) {
+export default function Modal({
+  isModalOpen,
+  onConfirm,
+  onCancel,
+  lastFocusedRef,
+}) {
+  // ? closeButtonRefはモーダルの要素の中身だからこのコンポーネントで宣言したってこと？
+  const closeButtonRef = useRef(null);
+
   // イベントリスナー登録したい！これは画面描画以外👉️useEffectの出番！
   // TODO: これって最後に処理される？
   useEffect(() => {
@@ -20,6 +29,8 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
         return onCancel();
       }
     }
+    // 角煮
+    console.log("closeButtonRef", closeButtonRef);
     document.addEventListener("keydown", handleEscapeKeyDown);
     // イベントの処理が終わったらreturnのうしろにイベントの解除の処理を書く！
     return () => {
@@ -27,6 +38,25 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
     };
     // useEffect内で使ったから書いた
   }, [isModalOpen, onCancel]);
+
+  // TODO: Modalのフォーカスと背景スクロールの制御のuseEffectを書く
+  // ここで書いていいのかわからないけど書く
+  useEffect(() => {
+    // Modalが開いている場合のコード
+    if (isModalOpen) {
+      // 背景スクロールをNGにする
+      // どうしたらこれ検索できる？
+      document.body.style.overflow = "hidden";
+      // Modalの閉じるボタンにフォーカス
+      closeButtonRef.current?.focus();
+    } else {
+      document.body.style.overflow = "";
+      lastFocusedRef.current?.focus();
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen, lastFocusedRef]);
 
   if (!isModalOpen) {
     // React のコンポーネントの return なら null を返す
@@ -69,6 +99,7 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
                 type="button"
                 className="btn-close"
                 onClick={onCancel}
+                ref={closeButtonRef}
               ></button>
             </div>
             <div className="modal-body">
