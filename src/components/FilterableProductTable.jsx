@@ -220,8 +220,8 @@ export default function FilterableProductTable() {
   }, [products]);
 
   // TODO: Deleteボタンの要素を取得してフォーカス当てる
-  // 依存配列にproductFocusedIDRefを入れてみたけどなぜいれるのかわからない
-  // 依存配列に入れた変数が変化したときだけその useEffect が実行される
+  // TODO: 依存配列にproductFocusedIDRefを入れてみたけどなぜいれるのかわからない
+  // 依存配列に入れた変数が変化したときだけその useEffect が実行される👉️productsが削除されたときに実行したいuseEffectだからproductsを依存配列とする
   useEffect(() => {
     const id = productFocusedIDRef.current;
     // IDからフォーカス当てる要素を取得

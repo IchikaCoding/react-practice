@@ -28,7 +28,7 @@ import ProductRow from "./ProductRow";
  * @param {string} props.draftPrice
  * @param {boolean} props.draftStocked
  * @param {string | null} props.errorMessage
- * @param {Array} props.visibleProducts
+ * @param {Array} props.visibleProducts TODO: ここの書き方が違うかも？！
  * @returns {JSX.Element}
  */
 export default function ProductTable({
