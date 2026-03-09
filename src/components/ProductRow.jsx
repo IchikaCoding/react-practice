@@ -189,6 +189,7 @@ export default function ProductRow({
           <button
             onClick={() => handleDeleteButton(product.id)}
             className="btn btn-danger w-100"
+            id={`product-deleteBtn-${product.id}`}
           >
             Delete
           </button>

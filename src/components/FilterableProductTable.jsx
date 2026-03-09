@@ -31,7 +31,8 @@ export default function FilterableProductTable() {
   const [draftStocked, setDraftStocked] = useState(false);
   // 商品の値段が空欄だったときに表示するためのエラーメッセージstate
   const [errorMessage, setErrorMessage] = useState("");
-
+  // 次にフォーカスを当てたい商品のIDを保管するRef
+  const productFocusedIDRef = useRef(null);
   // productsをstateにして、更新もここで行われる
   // リロードされると、またモックデータで初期化される
   // TODO: これ合っている？
@@ -164,38 +165,77 @@ export default function FilterableProductTable() {
       setIsModalOpen(false);
       return;
     }
+
     // TODO: productsの中身を調べて、currentProductIndexがあっているのか確認する
     console.log("products", products);
+    const sortedProducts = getVisibleProducts(filterCategory);
     // TODO: フォーカスを次の行へ移動
     // deleteBtnIdから商品のインデックスを取得する方法
-    const currentProductIndex = products.findIndex(
+    const currentProductIndex = sortedProducts.findIndex(
       (product) => product.id === deleteBtnId,
     );
+    // 下の行のインデックスがあるならそのIDを取得
+    // それがないなら上の行のインデックスのIDを取得
+    // null合体演算子
+    const nextFocusedId =
+      products[currentProductIndex + 1]?.id ??
+      products[currentProductIndex - 1]?.id ??
+      null;
+    // pendingFocusIdRefで次のDeleteがある要素のIDを取得
+    // TODO: nullが入った場合どうする？
+    productFocusedIDRef.current = nextFocusedId;
+    console.log("nextFocusedId", nextFocusedId);
     console.log("currentProductIndex", currentProductIndex);
+
     // productsのコピーをprevとして作成。その配列から1つずつ要素を取得する
     // その要素のIDとdeleteBtnIdが一致していたら削除できる
     setProducts((prev) => prev.filter((product) => product.id !== deleteBtnId));
     setIsModalOpen(false);
-    // Deleteボタンの
     // deleteした後はDeleteボタンのIDはリセットしたいからnullをいれる
     setDeleteBtnId(null);
+    // フォーカスをnextFocusedIdの要素に当てる
   }
   function handleModalCancelBtn() {
     setIsModalOpen(false);
     setDeleteBtnId(null);
   }
-
+  // TODO: 画面表示の配列を作成する関数を作成する
+  // categoryでフィルターしたProductsたちを返す
+  function getVisibleProducts(filterCategory) {
+    // TODO: productsの手前でカテゴリ順に並び替えること
+    const sortProducts = products.toSorted((a, b) =>
+      a.category.localeCompare(b.category),
+    );
+    //nullなら全部合格。カテゴリが一致するものがあったら一致のカテゴリだけ合格
+    const filterCategoryProducts = sortProducts.filter((product) => {
+      return filterCategory === "All" || filterCategory === product.category;
+    });
+    console.log("filterCategoryProducts", filterCategoryProducts);
+    return filterCategoryProducts;
+  }
   useEffect(() => {
     // stateとローカルストレージが違っていたらstateに合わせてローカルストレージを更新する
     //  [products]は依存配列として指定している
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
   }, [products]);
 
+  // TODO: Deleteボタンの要素を取得してフォーカス当てる
+  // 依存配列にproductFocusedIDRefを入れてみたけどなぜいれるのかわからない
+  // 依存配列に入れた変数が変化したときだけその useEffect が実行される
+  useEffect(() => {
+    const id = productFocusedIDRef.current;
+    // IDからフォーカス当てる要素を取得
+    const focusedEl = document.getElementById(`product-deleteBtn-${id}`);
+    focusedEl?.focus();
+    // TODO: なぜIDをリセットするの？
+    productFocusedIDRef.current = null;
+  }, [products]);
   // 検索テキストのstate変数の初期値
   const [filterText, setFilterText] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
   const [filterCategory, setFilterCategory] = useState("All");
 
+  const visibleProducts = getVisibleProducts(filterCategory);
   console.log("filterCategory", filterCategory);
   return (
     <div className="container">
@@ -241,6 +281,7 @@ export default function FilterableProductTable() {
             setDraftPrice={setDraftPrice}
             setDraftStocked={setDraftStocked}
             errorMessage={errorMessage}
+            visibleProducts={visibleProducts}
           />
         </div>
       </div>
