@@ -32,10 +32,10 @@ import ProductRow from "./ProductRow";
  * @returns {JSX.Element}
  */
 export default function ProductTable({
-  products,
+  // products,
   filterText,
   inStockOnly,
-  filterCategory,
+  // filterCategory,
   handleDeleteButton,
   editingId,
   handleEditButton,

@@ -171,7 +171,7 @@ export default function FilterableProductTable() {
 
     // TODO: productsの中身を調べて、currentProductIndexがあっているのか確認する
     console.log("products", products);
-    const sortedProducts = getVisibleProducts(filterCategory);
+    const sortedProducts = getVisibleProducts(products, filterCategory);
     // TODO: フォーカスを次の行へ移動
     // deleteBtnIdから商品のインデックスを取得する方法
     const currentProductIndex = sortedProducts.findIndex(
@@ -230,16 +230,19 @@ export default function FilterableProductTable() {
   // Deleteボタンの要素を取得してフォーカス当てる
   // 依存配列に入れた変数が変化したときだけその useEffect が実行される👉️productsが削除されたときに実行したいuseEffectだからproductsを依存配列とする
   useEffect(() => {
-    console.log("deleteBtnRef", deleteBtnRefs);
+    console.log("deleteBtnRefs", deleteBtnRefs);
     const id = productFocusedIDRef.current;
     if (!id) return;
     // Mapを使用して要素をゲットしてfocusを当てる
-    // TODO: どうしてcurrentの後ろにオプショナルチェーン演算子を入れないの？
+    // どうしてcurrentの後ろにオプショナルチェーン演算子を入れないの？👉️useRef(new Map())をしているからcurrentは常にmapになるので書かなくて大丈夫！
     // もしundefinedになったときはfocusどうなる？
     deleteBtnRefs.current.get(id)?.focus();
     // なぜIDをリセットするの？
     // 👉️IDはモーダルを閉じるときだけの一時メモ。IDを残すと次回の更新時に意図しない再フォーカスが起きます。
     productFocusedIDRef.current = null;
+    // ここでどうしてdeleteBtnRefs.current.delete(id)をしないの？
+    // 👉️このuseEffectでやることは、次のボタン要素にfocusを当てること。
+    // ProductRowが再描画された瞬間に削除されたボタンとかはidでdeleteされる👉️ここでやる必要ない！
   }, [products]);
   // 検索テキストのstate変数の初期値
   const [filterText, setFilterText] = useState("");
