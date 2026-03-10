@@ -40,6 +40,7 @@ export default function ProductRow({
   draftPrice,
   draftStocked,
   errorMessage,
+  deleteBtnRefs,
 }) {
   // 在庫があるなら商品の名前を代入、ないなら表品名が赤文字になるようにspan要素を代入している
   const name = product.stocked ? (
@@ -189,7 +190,16 @@ export default function ProductRow({
           <button
             onClick={() => handleDeleteButton(product.id)}
             className="btn btn-danger w-100"
-            id={`product-deleteBtn-${product.id}`}
+            ref={(el) => {
+              if (el) {
+                deleteBtnRefs.current.set(product.id, el);
+              } else {
+                // deleteするのはどうして？
+                // elseになるのは削除ボタンが消えたとき（編集モード、検索で除外されたとき、削除された瞬間とか）
+                // 要素がないときにidを消さないと、FilterableProductTable.jsxでgetしたときに画面の状態とMapの中身がズレてしまう
+                deleteBtnRefs.current.delete(product.id);
+              }
+            }}
           >
             Delete
           </button>

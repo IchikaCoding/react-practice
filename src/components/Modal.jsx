@@ -15,7 +15,8 @@ export default function Modal({
   onCancel,
   lastFocusedRef,
 }) {
-  // ? closeButtonRefはモーダルの要素の中身だからこのコンポーネントで宣言したってこと？
+  // closeButtonRefはモーダルの要素の中身だからこのコンポーネントで宣言したってこと
+  // ! closeButtonRef.currentのDOM要素には画面描画後に入る
   const closeButtonRef = useRef(null);
 
   // イベントリスナー登録したい！これは画面描画以外👉️useEffectの出番！

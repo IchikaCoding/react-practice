@@ -33,6 +33,8 @@ export default function FilterableProductTable() {
   const [errorMessage, setErrorMessage] = useState("");
   // 次にフォーカスを当てたい商品のIDを保管するRef
   const productFocusedIDRef = useRef(null);
+  // ProductRowのDeleteボタンの要素をIDで取得したものを持っておくRef
+  const deleteBtnRefs = useRef(new Map());
   // productsをstateにして、更新もここで行われる
   // リロードされると、またモックデータで初期化される
   // TODO: これ合っている？
@@ -152,6 +154,7 @@ export default function FilterableProductTable() {
   function handleDeleteButton(deleteBtnId) {
     // delete押す直前にフォーカスが当たっているHTML要素を代入してそれを保存しておく
     lastFocusedRef.current = document.activeElement;
+
     console.log("lastFocusedRef", lastFocusedRef);
     setIsModalOpen(true);
     setDeleteBtnId(deleteBtnId);
@@ -176,7 +179,8 @@ export default function FilterableProductTable() {
     );
     // 下の行のインデックスがあるならそのIDを取得
     // それがないなら上の行のインデックスのIDを取得
-    // null合体演算子
+    // TODO: null合体演算子じゃなくて論理和のほうがいいのでは？
+    // id が null/undefined のときだけ次候補にしたい」なら ??
     const nextFocusedId =
       products[currentProductIndex + 1]?.id ??
       products[currentProductIndex - 1]?.id ??
@@ -199,9 +203,11 @@ export default function FilterableProductTable() {
     setIsModalOpen(false);
     setDeleteBtnId(null);
   }
-  // TODO: 画面表示の配列を作成する関数を作成する
+  // 画面表示の配列を作成する関数を作成する
   // categoryでフィルターしたProductsたちを返す
-  function getVisibleProducts(filterCategory) {
+  // 引数は汎用関数にしたいから、FilterableProductTable.jsx内でstateとして宣言されているものは引数にしておく
+  // 👉️他のコンポーネントでも使いやすいかも
+  function getVisibleProducts(products, filterCategory) {
     // TODO: productsの手前でカテゴリ順に並び替えること
     const sortProducts = products.toSorted((a, b) =>
       a.category.localeCompare(b.category),
@@ -219,15 +225,20 @@ export default function FilterableProductTable() {
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
   }, [products]);
 
-  // TODO: Deleteボタンの要素を取得してフォーカス当てる
-  // TODO: 依存配列にproductFocusedIDRefを入れてみたけどなぜいれるのかわからない
+  // TODO: Map()を使ってボタン要素を取得してみよう！
+
+  // Deleteボタンの要素を取得してフォーカス当てる
   // 依存配列に入れた変数が変化したときだけその useEffect が実行される👉️productsが削除されたときに実行したいuseEffectだからproductsを依存配列とする
   useEffect(() => {
+    console.log("deleteBtnRef", deleteBtnRefs);
     const id = productFocusedIDRef.current;
-    // IDからフォーカス当てる要素を取得
-    const focusedEl = document.getElementById(`product-deleteBtn-${id}`);
-    focusedEl?.focus();
-    // TODO: なぜIDをリセットするの？
+    if (!id) return;
+    // Mapを使用して要素をゲットしてfocusを当てる
+    // TODO: どうしてcurrentの後ろにオプショナルチェーン演算子を入れないの？
+    // もしundefinedになったときはfocusどうなる？
+    deleteBtnRefs.current.get(id)?.focus();
+    // なぜIDをリセットするの？
+    // 👉️IDはモーダルを閉じるときだけの一時メモ。IDを残すと次回の更新時に意図しない再フォーカスが起きます。
     productFocusedIDRef.current = null;
   }, [products]);
   // 検索テキストのstate変数の初期値
@@ -235,7 +246,7 @@ export default function FilterableProductTable() {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [filterCategory, setFilterCategory] = useState("All");
 
-  const visibleProducts = getVisibleProducts(filterCategory);
+  const visibleProducts = getVisibleProducts(products, filterCategory);
   console.log("filterCategory", filterCategory);
   return (
     <div className="container">
@@ -282,6 +293,7 @@ export default function FilterableProductTable() {
             setDraftStocked={setDraftStocked}
             errorMessage={errorMessage}
             visibleProducts={visibleProducts}
+            deleteBtnRefs={deleteBtnRefs}
           />
         </div>
       </div>
