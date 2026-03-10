@@ -49,6 +49,7 @@ export default function ProductTable({
   draftStocked,
   errorMessage,
   visibleProducts,
+  deleteBtnRefs,
 }) {
   // カテゴリと商品の情報をいれるための配列
   const rows = [];
@@ -105,6 +106,7 @@ export default function ProductTable({
         draftPrice={draftPrice}
         draftStocked={draftStocked}
         errorMessage={errorMessage}
+        deleteBtnRefs={deleteBtnRefs}
       />,
     );
     lastCategory = product.category;
