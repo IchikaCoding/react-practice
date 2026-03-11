@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import SearchBar from "./SearchBar";
 import ProductTable from "./ProductTable";
 import AddProductForm from "./AddProductForm";
+import ImportProducts from "./ImportProducts";
 import { PRODUCTS, PRODUCTS_KEY } from "../data/products";
 import {
   validationPrice,
@@ -345,6 +346,72 @@ export default function FilterableProductTable() {
             )
           : null}
       </div>
+      {/* チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
+      {/* 関数を渡したのは入力値をもらって、その値でstateを更新したいから */}
+
+      <div className="mb-4 card">
+        <div className="card-body">
+          <h3 className="card-title mb-3">Search for products</h3>
+          <SearchBar
+            filterText={filterText}
+            inStockOnly={inStockOnly}
+            filterCategory={filterCategory}
+            onFilterCategoryChange={setFilterCategory}
+            onFilterTextChange={setFilterText}
+            onInStockOnlyChange={setInStockOnly}
+          />
+        </div>
+      </div>
+
+      {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
+      {/* 更新された値を使えばいいだけだからstateを更新する関数は不要 */}
+      <div className="mb-4 card">
+        <div className="card-body">
+          <h3 className="card-title mb-3">Product table</h3>
+          <ProductTable
+            products={products}
+            inStockOnly={inStockOnly}
+            filterText={filterText}
+            filterCategory={filterCategory}
+            handleDeleteButton={handleDeleteButton}
+            editingId={editingId}
+            handleEditButton={handleEditButton}
+            handleSaveButton={handleSaveButton}
+            handleCancelButton={handleCancelButton}
+            draftName={draftName}
+            draftPrice={draftPrice}
+            draftStocked={draftStocked}
+            setDraftName={setDraftName}
+            setDraftPrice={setDraftPrice}
+            setDraftStocked={setDraftStocked}
+            errorMessage={errorMessage}
+            visibleProducts={visibleProducts}
+            deleteBtnRefs={deleteBtnRefs}
+          />
+        </div>
+      </div>
+      {/* ここから、Form周りのJSXを書く。AddProductFormコンポーネントはFormだけ描画にしておく */}
+      <div className="mb-4 card">
+        <div className="card-body">
+          <h3 className="card-title mb-3">Product addition form</h3>
+          <AddProductForm products={products} onProductsChange={setProducts} />
+        </div>
+      </div>
+      <div className="mb-4 card">
+        <div className="card-body">
+          <h3 className="card-title mb-3">Import products</h3>
+          <ImportProducts
+            products={products}
+            onProductsChange={setProducts}
+          />
+        </div>
+      </div>
+      <Modal
+        isModalOpen={isModalOpen}
+        onConfirm={handleModalOkBtn}
+        onCancel={handleModalCancelBtn}
+        lastFocusedRef={lastFocusedRef}
+      />
     </div>
   );
 }
