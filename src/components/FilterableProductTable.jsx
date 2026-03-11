@@ -333,6 +333,7 @@ export default function FilterableProductTable() {
         </div>
       </div>
       <div>
+        {/* TODO: Portalを使用して、document.bodyのなかにModalのDOMを移動させる？？ */}
         {modalRoot
           ? createPortal(
               <Modal
@@ -343,7 +344,6 @@ export default function FilterableProductTable() {
               modalRoot,
             )
           : null}
-        {/* TODO: Portalを使用して、document.bodyのなかにModalのDOMを移動させる？？ */}
       </div>
     </div>
   );
