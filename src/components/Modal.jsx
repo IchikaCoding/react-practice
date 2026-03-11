@@ -6,15 +6,9 @@ import { useEffect, useRef } from "react";
  * @param {boolean} props.isModalOpen - モーダルを開くかどうか
  * @param {() => void} props.onConfirm - OK時の処理
  * @param {() => void} props.onCancel - キャンセル時の処理
- * @param {HTMLElement | null} props.lastFocusedRef - モーダル開く前にフォーカスが当たっていたHTML要素
  * @returns {JSX.Element | null} モーダルUI（非表示時はnull）
  */
-export default function Modal({
-  isModalOpen,
-  onConfirm,
-  onCancel,
-  lastFocusedRef,
-}) {
+export default function Modal({ isModalOpen, onConfirm, onCancel }) {
   // closeButtonRefはモーダルの要素の中身だからこのコンポーネントで宣言したってこと
   // ! closeButtonRef.currentのDOM要素には画面描画後に入る
   const closeButtonRef = useRef(null);
@@ -43,6 +37,8 @@ export default function Modal({
   // TODO: Modalのフォーカスと背景スクロールの制御のuseEffectを書く
   // ここで書いていいのかわからないけど書く
   useEffect(() => {
+    const appContent = document.getElementById("app-content");
+    if (!appContent) return;
     // Modalが開いている場合のコード
     if (isModalOpen) {
       // 背景スクロールをNGにする
@@ -50,14 +46,23 @@ export default function Modal({
       document.body.style.overflow = "hidden";
       // Modalの閉じるボタンにフォーカス
       closeButtonRef.current?.focus();
+      // setAttributeは第1引数に属性名、第2引数に値を書く
+      appContent.setAttribute("inert", "");
+      // focus当てない場所＆読み上げ機能に読み上げさせたくない場所として隠すため
+      appContent.setAttribute("aria-hidden", "true");
     } else {
+      // ここが動くのはモーダルが閉じるとき（削除確定時、Cancelしたとき）
       document.body.style.overflow = "";
-      lastFocusedRef.current?.focus();
+      // removeAttributeは第1引数に属性名を書いてその属性を削除する
+      appContent.removeAttribute("inert");
+      appContent.removeAttribute("aria-hidden");
     }
     return () => {
       document.body.style.overflow = "";
+      appContent.removeAttribute("inert");
+      appContent.removeAttribute("aria-hidden");
     };
-  }, [isModalOpen, lastFocusedRef]);
+  }, [isModalOpen]);
 
   if (!isModalOpen) {
     // React のコンポーネントの return なら null を返す
@@ -96,7 +101,7 @@ export default function Modal({
                 Confirm delete
               </h2>
               <button
-                aria-label="closeButton"
+                aria-label="Close dialog"
                 type="button"
                 className="btn-close"
                 onClick={onCancel}
@@ -107,11 +112,12 @@ export default function Modal({
               <p>Are you sure you want to delete?</p>
             </div>
             <div className="modal-footer">
+              {/* ここはボタン要素にテキストがあるからaria-label は基本つけない。
+              同時に付けると、見えている文字と読み上げ名がズレるリスクがある */}
               <button
                 type="button"
                 onClick={onCancel}
                 className="btn btn-secondary"
-                aria-label="close"
               >
                 Cancel
               </button>

@@ -8,6 +8,7 @@ import {
   validationPrice,
   validationTrimmedName,
 } from "../validation/validation";
+import { createPortal } from "react-dom";
 
 /**
  * PRODUCTSの要素一つ分の型
@@ -144,13 +145,20 @@ export default function FilterableProductTable() {
     // IDのリセットのためになにもないよと意味でnullを入れる
     setEditingId(null);
   }
+  /**
+   * 編集モードをCancelしたときの処理
+   * @param {*} cancelBtnId
+   */
   function handleCancelButton(cancelBtnId) {
     console.log("cancelBtnId", cancelBtnId);
     setEditingId(null);
     // 一回編集ボタンを押したあとにキャンセルしたらエラーメッセージはリセット
     setErrorMessage(null);
   }
-
+  /**
+   * 削除ボタンを押してモーダルが開く処理
+   * @param {*} deleteBtnId
+   */
   function handleDeleteButton(deleteBtnId) {
     // delete押す直前にフォーカスが当たっているHTML要素を代入してそれを保存しておく
     lastFocusedRef.current = document.activeElement;
@@ -161,6 +169,10 @@ export default function FilterableProductTable() {
   }
   // モーダル画面のdeleteボタンが押されたときの処理
   // TODO: Okはややこしいかも？
+  /**
+   * モーダルの削除ボタンを押したときの処理
+   * @returns
+   */
   function handleModalOkBtn() {
     // deleteBtnIdがnullのときは削除を実行しないというガード
     if (!deleteBtnId) {
@@ -182,8 +194,8 @@ export default function FilterableProductTable() {
     // TODO: null合体演算子じゃなくて論理和のほうがいいのでは？
     // id が null/undefined のときだけ次候補にしたい」なら ??
     const nextFocusedId =
-      products[currentProductIndex + 1]?.id ??
-      products[currentProductIndex - 1]?.id ??
+      sortedProducts[currentProductIndex + 1]?.id ??
+      sortedProducts[currentProductIndex - 1]?.id ??
       null;
     // pendingFocusIdRefで次のDeleteがある要素のIDを取得
     // TODO: nullが入った場合どうする？
@@ -199,9 +211,13 @@ export default function FilterableProductTable() {
     setDeleteBtnId(null);
     // フォーカスをnextFocusedIdの要素に当てる
   }
+  /**
+   * モーダルを閉じるときの処理
+   */
   function handleModalCancelBtn() {
     setIsModalOpen(false);
     setDeleteBtnId(null);
+    lastFocusedRef.current?.focus();
   }
   // 画面表示の配列を作成する関数を作成する
   // categoryでフィルターしたProductsたちを返す
@@ -236,6 +252,7 @@ export default function FilterableProductTable() {
     // Mapを使用して要素をゲットしてfocusを当てる
     // どうしてcurrentの後ろにオプショナルチェーン演算子を入れないの？👉️useRef(new Map())をしているからcurrentは常にmapになるので書かなくて大丈夫！
     // もしundefinedになったときはfocusどうなる？
+    // TODO: current?.にしたらNGなのか？
     deleteBtnRefs.current.get(id)?.focus();
     // なぜIDをリセットするの？
     // 👉️IDはモーダルを閉じるときだけの一時メモ。IDを残すと次回の更新時に意図しない再フォーカスが起きます。
@@ -250,69 +267,84 @@ export default function FilterableProductTable() {
   const [filterCategory, setFilterCategory] = useState("All");
 
   const visibleProducts = getVisibleProducts(products, filterCategory);
+  // ? Portalで描画する場所を分けるために、index.htmlのmodal-rootを作成して取得
+  const modalRoot = document.getElementById("modal-root");
   console.log("filterCategory", filterCategory);
   return (
     <div className="container">
+      {/* モーダル以外をapp-contentに設定。理由は、背景をラップしてモーダル以外にfocusとかを当てないため */}
+      <div id="app-content">
+        <div>
+          <h1>Product inventory management app</h1>
+        </div>
+        {/* チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
+        {/* 関数を渡したのは入力値をもらって、その値でstateを更新したいから */}
+
+        <div className="mb-4 card">
+          <div className="card-body">
+            <h3 className="card-title mb-3">Search for products</h3>
+            <SearchBar
+              filterText={filterText}
+              inStockOnly={inStockOnly}
+              filterCategory={filterCategory}
+              onFilterCategoryChange={setFilterCategory}
+              onFilterTextChange={setFilterText}
+              onInStockOnlyChange={setInStockOnly}
+            />
+          </div>
+        </div>
+
+        {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
+        {/* 更新された値を使えばいいだけだからstateを更新する関数は不要 */}
+        <div className="mb-4 card">
+          <div className="card-body">
+            <h3 className="card-title mb-3">Product table</h3>
+            <ProductTable
+              products={products}
+              inStockOnly={inStockOnly}
+              filterText={filterText}
+              filterCategory={filterCategory}
+              handleDeleteButton={handleDeleteButton}
+              editingId={editingId}
+              handleEditButton={handleEditButton}
+              handleSaveButton={handleSaveButton}
+              handleCancelButton={handleCancelButton}
+              draftName={draftName}
+              draftPrice={draftPrice}
+              draftStocked={draftStocked}
+              setDraftName={setDraftName}
+              setDraftPrice={setDraftPrice}
+              setDraftStocked={setDraftStocked}
+              errorMessage={errorMessage}
+              visibleProducts={visibleProducts}
+              deleteBtnRefs={deleteBtnRefs}
+            />
+          </div>
+        </div>
+        {/* ここから、Form周りのJSXを書く。AddProductFormコンポーネントはFormだけ描画にしておく */}
+        <div className="mb-4 card">
+          <div className="card-body">
+            <h3 className="card-title mb-3">Product addition form</h3>
+            <AddProductForm
+              products={products}
+              onProductsChange={setProducts}
+            />
+          </div>
+        </div>
+      </div>
       <div>
-        <h1>Product inventory management app</h1>
+        {modalRoot
+          ? createPortal(
+              <Modal
+                isModalOpen={isModalOpen}
+                onConfirm={handleModalOkBtn}
+                onCancel={handleModalCancelBtn}
+              />,
+              modalRoot,
+            )
+          : null}
+        {/* TODO: Portalを使用して、document.bodyのなかにModalのDOMを移動させる？？ */}
       </div>
-      {/* チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
-      {/* 関数を渡したのは入力値をもらって、その値でstateを更新したいから */}
-
-      <div className="mb-4 card">
-        <div className="card-body">
-          <h3 className="card-title mb-3">Search for products</h3>
-          <SearchBar
-            filterText={filterText}
-            inStockOnly={inStockOnly}
-            filterCategory={filterCategory}
-            onFilterCategoryChange={setFilterCategory}
-            onFilterTextChange={setFilterText}
-            onInStockOnlyChange={setInStockOnly}
-          />
-        </div>
-      </div>
-
-      {/* 商品情報、チェックされたかどうか、フィルターするときのテキストを受け取るためのprops */}
-      {/* 更新された値を使えばいいだけだからstateを更新する関数は不要 */}
-      <div className="mb-4 card">
-        <div className="card-body">
-          <h3 className="card-title mb-3">Product table</h3>
-          <ProductTable
-            products={products}
-            inStockOnly={inStockOnly}
-            filterText={filterText}
-            filterCategory={filterCategory}
-            handleDeleteButton={handleDeleteButton}
-            editingId={editingId}
-            handleEditButton={handleEditButton}
-            handleSaveButton={handleSaveButton}
-            handleCancelButton={handleCancelButton}
-            draftName={draftName}
-            draftPrice={draftPrice}
-            draftStocked={draftStocked}
-            setDraftName={setDraftName}
-            setDraftPrice={setDraftPrice}
-            setDraftStocked={setDraftStocked}
-            errorMessage={errorMessage}
-            visibleProducts={visibleProducts}
-            deleteBtnRefs={deleteBtnRefs}
-          />
-        </div>
-      </div>
-      {/* ここから、Form周りのJSXを書く。AddProductFormコンポーネントはFormだけ描画にしておく */}
-      <div className="mb-4 card">
-        <div className="card-body">
-          <h3 className="card-title mb-3">Product addition form</h3>
-          <AddProductForm products={products} onProductsChange={setProducts} />
-        </div>
-      </div>
-      <Modal
-        isModalOpen={isModalOpen}
-        onConfirm={handleModalOkBtn}
-        onCancel={handleModalCancelBtn}
-        lastFocusedRef={lastFocusedRef}
-      />
     </div>
   );
 }
