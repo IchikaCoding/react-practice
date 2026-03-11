@@ -150,7 +150,8 @@ export default function ProductRow({
         {errorMessage ? (
           <tr>
             {/* colspanをつけてセル4つ分を使用するようにしました */}
-            <td className="error-message text-danger" colSpan={4}>
+            {/* role="alert"をいれると、自動で「強めの live 領域（assertive）」扱いになる。だからaria-live="assertive"は不要*/}
+            <td className="error-message text-danger" colSpan={4} role="alert">
               {errorMessage}
             </td>
           </tr>

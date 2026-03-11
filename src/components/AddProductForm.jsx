@@ -145,7 +145,12 @@ export default function AddProductForm({ products, onProductsChange }) {
             id="product-name"
           ></input>
         </div>
-        <p className="error-message text-danger">{errorMessage}</p>
+        {/* trueのときにHTML書くなら()で囲む */}
+        {errorMessage ? (
+          <p className="error-message text-danger" role="alert">
+            {errorMessage}
+          </p>
+        ) : null}
         <button type="submit" className="btn btn-primary mb-3">
           add product
         </button>
