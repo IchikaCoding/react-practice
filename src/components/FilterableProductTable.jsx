@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import SearchBar from "./SearchBar";
 import ProductTable from "./ProductTable";
 import AddProductForm from "./AddProductForm";
+import ImportProducts from "./ImportProducts";
 import { PRODUCTS, PRODUCTS_KEY } from "../data/products";
 import {
   validationPrice,
@@ -344,6 +345,15 @@ export default function FilterableProductTable() {
               modalRoot,
             )
           : null}
+      </div>
+      <div className="mb-4 card">
+        <div className="card-body">
+          <h3 className="card-title mb-3">Import products</h3>
+          <ImportProducts
+            products={products}
+            onProductsChange={setProducts}
+          />
+        </div>
       </div>
     </div>
   );

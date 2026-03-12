@@ -1,0 +1,7 @@
+category,name,price,stocked
+Fruits,Banana,2,true
+Fruits,Mango,3,true
+Vegetables,Carrot,2,false
+Vegetables,Tomato,1,true
+Snacks,Chips,5,true
+Snacks,Popcorn,3,false
