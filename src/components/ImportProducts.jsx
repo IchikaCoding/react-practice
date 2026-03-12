@@ -46,7 +46,8 @@ function parseRow(row, rowIndex) {
   // 価格のチェック
   // TODO: priceRawを数値に変える👉️数値にならなかった場合はどういうものが入っているの？
   const price = Number(priceRaw);
-  console.log("Number.isFinite(price)", Number.isFinite(price));
+  // TODO: ここの数値はどんな値が入っているのか確認する
+  console.log("price", price);
   // 「有限数じゃないときとか、NaNとかInfinityのとき」か、priceが1未満、10万以上ならエラー
   if (!Number.isFinite(price) || price < 1 || price > 100000) {
     return {
@@ -57,15 +58,20 @@ function parseRow(row, rowIndex) {
 
   // 在庫のチェック（true/false/"TRUE"/"FALSE"/1/0 を許容）
   let stocked;
+  // 在庫一時データが真偽値か確認して、真偽値だったらstockedに代入
   if (typeof stockedRaw === "boolean") {
     stocked = stockedRaw;
   } else {
     // stockedが真偽値じゃないときの処理
+    // stockedRawがあったらそれを文字列にして、スペース消す、小文字にしてsに代入。なかったら空文字をいれる。
+    // toLowerCase()は日本語なら何も変化なし
     const s = String(stockedRaw ?? "")
       .trim()
       .toLowerCase();
+    // sが"true" か1ならstockedにtrueを代入する
     if (s === "true" || s === "1") {
       stocked = true;
+      //  sが"false" か0ならstockedにfalseを代入する
     } else if (s === "false" || s === "0") {
       stocked = false;
     } else {
@@ -75,7 +81,7 @@ function parseRow(row, rowIndex) {
       };
     }
   }
-
+  // TODO: Math.floorって何？👉️同じか、小さい方を返す関数
   return {
     product: {
       id: crypto.randomUUID(),
@@ -97,18 +103,27 @@ function parseRow(row, rowIndex) {
  * @returns {JSX.Element}
  */
 export default function ImportProducts({ products, onProductsChange }) {
+  // TODO: 空の配列で初期化？エラーは配列で管理するとやりやすいのかしら？
+  // このコンポーネント内で表示非表示を管理するから、ここでstateを宣言している
+  // stateにしてエラーと成功したときのメッセージを表示できるようにしている
   const [errors, setErrors] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
+  // TODO: これはなんだろう？input要素を取得している
   const fileInputRef = useRef(null);
 
   /**
    * ファイルが選択されたときの処理
+   * TODO: Reactのイベントってなに？JSと同じ？
    * @param {React.ChangeEvent<HTMLInputElement>} e
    */
   function handleFileChange(e) {
+    console.log("e", e);
+    console.log("e.target.files", e.target.files);
+    // TODO: どうしてイベントにファイルが入っているの？
     const file = e.target.files?.[0];
+    // TODO: どういうときに早期リターンするの？
     if (!file) return;
-
+    // ーーーーーー↑2026-03-12ここまでーーーーーー
     // 拡張子チェック
     const ext = file.name.split(".").pop()?.toLowerCase();
     if (!["csv", "xlsx", "xls"].includes(ext)) {
