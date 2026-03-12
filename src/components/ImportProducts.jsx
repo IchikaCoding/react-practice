@@ -8,6 +8,7 @@ import { read, utils } from "xlsx";
 // CSVやExcelで使えるカテゴリの一覧
 const VALID_CATEGORIES = ["Fruits", "Vegetables", "Snacks"];
 
+// TODO: ここの関数からデータの変換とエラー処理を学ぶ
 /**
  * 1行分のデータをバリデーションして、Productオブジェクトに変換する
  * @param {Object} row - ファイルから読み取った1行分のデータ
@@ -15,20 +16,26 @@ const VALID_CATEGORIES = ["Fruits", "Vegetables", "Snacks"];
  * @returns {{ product: Product | null, error: string | null }}
  */
 function parseRow(row, rowIndex) {
+  // categoryを文字列にしつつ、スペースを削除
   const category = String(row.category ?? "").trim();
   const name = String(row.name ?? "").trim();
+  // TODO: どうしてNumberにしないの？
+  // 変数のRawは仮のデータとして保存していることをわかりやすくするため？
   const priceRaw = row.price;
   const stockedRaw = row.stocked;
 
   // カテゴリのチェック
+  // categoryにVALID_CATEGORIES配列に含まれないカテゴリが入っていたらエラー
   if (!VALID_CATEGORIES.includes(category)) {
+    // TODO: エラーとproductをプロパティにしてエラーならproduct側をnullにするのってよくやるやり方？
     return {
       product: null,
+      // rowIndexは引数でもらう。VALID_CATEGORIESの配列から,とスペース区切りでくっつけた有効なカテゴリを示す。
       error: `Row ${rowIndex}: category "${category}" is invalid. Use: ${VALID_CATEGORIES.join(", ")}`,
     };
   }
 
-  // 商品名のチェック
+  // 商品名のチェック（1～30文字以内じゃないときにエラー）
   if (name.length === 0 || name.length > 30) {
     return {
       product: null,
@@ -37,7 +44,10 @@ function parseRow(row, rowIndex) {
   }
 
   // 価格のチェック
+  // TODO: priceRawを数値に変える👉️数値にならなかった場合はどういうものが入っているの？
   const price = Number(priceRaw);
+  console.log("Number.isFinite(price)", Number.isFinite(price));
+  // 「有限数じゃないときとか、NaNとかInfinityのとき」か、priceが1未満、10万以上ならエラー
   if (!Number.isFinite(price) || price < 1 || price > 100000) {
     return {
       product: null,
@@ -50,7 +60,10 @@ function parseRow(row, rowIndex) {
   if (typeof stockedRaw === "boolean") {
     stocked = stockedRaw;
   } else {
-    const s = String(stockedRaw ?? "").trim().toLowerCase();
+    // stockedが真偽値じゃないときの処理
+    const s = String(stockedRaw ?? "")
+      .trim()
+      .toLowerCase();
     if (s === "true" || s === "1") {
       stocked = true;
     } else if (s === "false" || s === "0") {
@@ -75,6 +88,7 @@ function parseRow(row, rowIndex) {
   };
 }
 
+// TODO: errors / successMessageで画面表示を切り替える処理を確認する
 /**
  * CSV/Excelファイルから商品データをインポートするコンポーネント
  * @param {Object} props
@@ -102,7 +116,7 @@ export default function ImportProducts({ products, onProductsChange }) {
       setSuccessMessage("");
       return;
     }
-
+    // TODO: xlsxの処理はここから読む
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
@@ -122,6 +136,7 @@ export default function ImportProducts({ products, onProductsChange }) {
           return;
         }
 
+        // TODO: 一つでもエラーがあったら追加しない安全なデータ取り込みを学ぶ
         const newProducts = [];
         const parseErrors = [];
 
@@ -140,6 +155,7 @@ export default function ImportProducts({ products, onProductsChange }) {
           return;
         }
 
+        // TODO: 商品のstateを書き換える処理
         // バリデーション成功→商品を追加
         onProductsChange([...products, ...newProducts]);
         setErrors([]);
@@ -151,6 +167,7 @@ export default function ImportProducts({ products, onProductsChange }) {
         setSuccessMessage("");
       }
 
+      // TODO: fileInputRef.current.value = "";はよくでてくるらしいからチェック
       // ファイル入力をリセット（同じファイルを再選択可能にする）
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -175,8 +192,8 @@ export default function ImportProducts({ products, onProductsChange }) {
           className="form-control"
         />
         <div className="form-text">
-          Columns: <code>category</code>, <code>name</code>,{" "}
-          <code>price</code>, <code>stocked</code>
+          Columns: <code>category</code>, <code>name</code>, <code>price</code>,{" "}
+          <code>stocked</code>
         </div>
       </div>
 
