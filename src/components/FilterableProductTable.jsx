@@ -256,7 +256,6 @@ export default function FilterableProductTable() {
     // new Mapしているからmapはあるか確認しなくてOK
     // Mapしたときに、idで登録されているのかを確認するほうが大切
     // もしidが見つからなかったら、undefinedになって、focusせずにこの処理はスキップされる👉️そのまま何もしない
-    // TODO: もしidがなかったらundefined.focusになるからエラーじゃないの？
     deleteBtnRefs.current.get(id)?.focus();
     // なぜIDをリセットするの？
     // 👉️IDはモーダルを閉じるときだけの一時メモ。IDを残すと次回の更新時に意図しない再フォーカスが起きます。
