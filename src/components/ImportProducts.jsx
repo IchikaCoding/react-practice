@@ -81,7 +81,7 @@ function parseRow(row, rowIndex) {
       };
     }
   }
-  // TODO: Math.floorって何？👉️同じか、小さい方を返す関数
+  // Math.floorって何？👉️同じか、小さい方を返す関数
   return {
     product: {
       id: crypto.randomUUID(),
@@ -120,28 +120,42 @@ export default function ImportProducts({ products, onProductsChange }) {
     console.log("e", e);
     console.log("e.target.files", e.target.files);
     // TODO: どうしてイベントにファイルが入っているの？
+    // input要素自体がfile型を指定されているから、自分でもファイルを指定しているから？
+    // TODO: 複数ファイルを選択できるようにするには👉️multiple 属性を input 要素に付けると複数可能になる
+    // TODO: 0は最初に選択されたファイルにアクセスするの意味？
     const file = e.target.files?.[0];
     // TODO: どういうときに早期リターンするの？
     if (!file) return;
+
     // ーーーーーー↑2026-03-12ここまでーーーーーー
     // 拡張子チェック
+    // fileは配列？ドットの位置で区切って配列として返す👉️popで最後の拡張子の部分があるなら小文字にして返す
     const ext = file.name.split(".").pop()?.toLowerCase();
+    // もし拡張子が"csv", "xlsx", "xls"でもなかったらエラーを返す
     if (!["csv", "xlsx", "xls"].includes(ext)) {
       setErrors(["Please select a CSV or Excel (.xlsx, .xls) file."]);
+      // TODO: nullじゃないのはどうして？nullのときと空文字のときの使い分けがわからない。
       setSuccessMessage("");
       return;
     }
     // TODO: xlsxの処理はここから読む
+    // FileReaderオブジェクトを使用するとファイルを非同期に読み取ることができます
     const reader = new FileReader();
+    // TODO: onloadメソッドって何？
     reader.onload = (event) => {
       try {
+        // TODO: event.target.resultの内容を確認する
+        console.log("event.target.result", event.target.result);
+        // TODO: Uint8Arrayはなに？
         const data = new Uint8Array(event.target.result);
+        // xlsxのライブラリのreadメソッドです
+        // TODO: dataを配列型で読むよ、と意味かどうかを確認する
         const workbook = read(data, { type: "array" });
-
+        console.log("workbook", workbook);
         // 最初のシートを取得
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-
+        // -------------ここまで2026-03-13----------------
         // シートをJSON配列に変換（ヘッダー行をキーとして使う）
         const rows = utils.sheet_to_json(sheet);
 

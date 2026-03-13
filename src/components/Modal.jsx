@@ -46,9 +46,11 @@ export default function Modal({ isModalOpen, onConfirm, onCancel }) {
       document.body.style.overflow = "hidden";
       // Modalの閉じるボタンにフォーカス
       closeButtonRef.current?.focus();
+      // inert属性とはその要素の中を「操作できない状態」にする属性
       // setAttributeは第1引数に属性名、第2引数に値を書く
       appContent.setAttribute("inert", "");
-      // focus当てない場所＆読み上げ機能に読み上げさせたくない場所として隠すため
+      // 読み上げ機能に読み上げさせたくない場所として隠すなどため
+      // inert属性で十分だけど、念の為、支援技術に対してだけ隠す属性もつけて二重ガードしている
       appContent.setAttribute("aria-hidden", "true");
     } else {
       // ここが動くのはモーダルが閉じるとき（削除確定時、Cancelしたとき）

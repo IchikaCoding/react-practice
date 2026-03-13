@@ -251,9 +251,12 @@ export default function FilterableProductTable() {
     const id = productFocusedIDRef.current;
     if (!id) return;
     // Mapを使用して要素をゲットしてfocusを当てる
-    // どうしてcurrentの後ろにオプショナルチェーン演算子を入れないの？👉️useRef(new Map())をしているからcurrentは常にmapになるので書かなくて大丈夫！
-    // もしundefinedになったときはfocusどうなる？
-    // TODO: current?.にしたらNGなのか？
+
+    // current?.にしたらNGなのか？
+    // new Mapしているからmapはあるか確認しなくてOK
+    // Mapしたときに、idで登録されているのかを確認するほうが大切
+    // もしidが見つからなかったら、undefinedになって、focusせずにこの処理はスキップされる👉️そのまま何もしない
+    // TODO: もしidがなかったらundefined.focusになるからエラーじゃないの？
     deleteBtnRefs.current.get(id)?.focus();
     // なぜIDをリセットするの？
     // 👉️IDはモーダルを閉じるときだけの一時メモ。IDを残すと次回の更新時に意図しない再フォーカスが起きます。
@@ -268,7 +271,8 @@ export default function FilterableProductTable() {
   const [filterCategory, setFilterCategory] = useState("All");
 
   const visibleProducts = getVisibleProducts(products, filterCategory);
-  // ? Portalで描画する場所を分けるために、index.htmlのmodal-rootを作成して取得
+  // Portalで描画する場所を分けるために、index.htmlのmodal-rootを作成して取得
+  //  modalRootはHTMLElementかnullが入る
   const modalRoot = document.getElementById("modal-root");
   console.log("filterCategory", filterCategory);
   return (
@@ -334,7 +338,9 @@ export default function FilterableProductTable() {
         </div>
       </div>
       <div>
-        {/* TODO: Portalを使用して、document.bodyのなかにModalのDOMを移動させる？？ */}
+        {/* Portalを使用して、modalRootのなかにModalのDOMを移動させる */}
+        {/* modalRootの返り値がnullかHTMLElementのときは論理積でもOK（nullならfalsyになってnullが変えるから） */}
+        {/* 三項演算子はfalsyのときに明示的にnullを返すと決めることができて安全ではある。簡潔さ重視なら論理積！ */}
         {modalRoot
           ? createPortal(
               <Modal
@@ -349,10 +355,7 @@ export default function FilterableProductTable() {
       <div className="mb-4 card">
         <div className="card-body">
           <h3 className="card-title mb-3">Import products</h3>
-          <ImportProducts
-            products={products}
-            onProductsChange={setProducts}
-          />
+          <ImportProducts products={products} onProductsChange={setProducts} />
         </div>
       </div>
     </div>
