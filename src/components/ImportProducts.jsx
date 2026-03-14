@@ -108,13 +108,14 @@ export default function ImportProducts({ products, onProductsChange }) {
   // stateにしてエラーと成功したときのメッセージを表示できるようにしている
   const [errors, setErrors] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
-  // TODO: これはなんだろう？input要素を取得している
+  // ファイルを選択するためのinput要素
   const fileInputRef = useRef(null);
 
   /**
    * ファイルが選択されたときの処理
    * TODO: Reactのイベントってなに？JSと同じ？
-   * @param {React.ChangeEvent<HTMLInputElement>} e
+   * HTMLInputElementから、Input要素のイベントの型ですよという説明書き
+   * @param {React.ChangeEvent<HTMLInputElement>} e ブラウザのイベントみたいな感じで使える。ブラウザ差を吸収して、どの環境でも同じ書き方にしてくれるらしい。
    */
   function handleFileChange(e) {
     console.log("e", e);
@@ -122,14 +123,18 @@ export default function ImportProducts({ products, onProductsChange }) {
     // TODO: どうしてイベントにファイルが入っているの？
     // input要素自体がfile型を指定されているから、自分でもファイルを指定しているから？
     // TODO: 複数ファイルを選択できるようにするには👉️multiple 属性を input 要素に付けると複数可能になる
-    // TODO: 0は最初に選択されたファイルにアクセスするの意味？
+    // 0は1つ目のファイルにアクセスするの意味
+    // FileListに入っているのはメソッドたち？
+    // fileはファイルのメタ情報が入っているけど、ファイル本文を読むには非同期処理でFileReaderを使用する
     const file = e.target.files?.[0];
     // TODO: どういうときに早期リターンするの？
     if (!file) return;
-
+    // これを実行するためにimportをする
+    console.log("file", file);
     // ーーーーーー↑2026-03-12ここまでーーーーーー
     // 拡張子チェック
     // fileは配列？ドットの位置で区切って配列として返す👉️popで最後の拡張子の部分があるなら小文字にして返す
+    // TODO: splitで?.をやらないのは、拡張子があるという前提で考えているから
     const ext = file.name.split(".").pop()?.toLowerCase();
     // もし拡張子が"csv", "xlsx", "xls"でもなかったらエラーを返す
     if (!["csv", "xlsx", "xls"].includes(ext)) {
@@ -142,23 +147,29 @@ export default function ImportProducts({ products, onProductsChange }) {
     // FileReaderオブジェクトを使用するとファイルを非同期に読み取ることができます
     const reader = new FileReader();
     // TODO: onloadメソッドって何？
+    // TODO: readerは非同期だからawaitが必要なのでは？
+    // ファイルを読み込んだあとの処理を先に登録しておかないとファイル読み込みが早く終わった場合に間に合わなくなるらしい！
     reader.onload = (event) => {
       try {
-        // TODO: event.target.resultの内容を確認する
+        // event.target.resultは、多分ファイルの元データ
         console.log("event.target.result", event.target.result);
-        // TODO: Uint8Arrayはなに？
+        // Uint8Arrayはなに？「5452バイトのデータを、1バイトずつ見える形にしたビュー」
         const data = new Uint8Array(event.target.result);
+        // dataには配列の中に数字の羅列があった
+        console.log("data", data);
         // xlsxのライブラリのreadメソッドです
         // TODO: dataを配列型で読むよ、と意味かどうかを確認する
+
         const workbook = read(data, { type: "array" });
         console.log("workbook", workbook);
         // 最初のシートを取得
         const sheetName = workbook.SheetNames[0];
+        // workbook のSheetsというプロパティにセルのデータが入っていた
         const sheet = workbook.Sheets[sheetName];
         // -------------ここまで2026-03-13----------------
         // シートをJSON配列に変換（ヘッダー行をキーとして使う）
         const rows = utils.sheet_to_json(sheet);
-
+        console.log("rows", rows);
         if (rows.length === 0) {
           setErrors(["The file is empty or has no data rows."]);
           setSuccessMessage("");
@@ -167,42 +178,54 @@ export default function ImportProducts({ products, onProductsChange }) {
 
         // TODO: 一つでもエラーがあったら追加しない安全なデータ取り込みを学ぶ
         const newProducts = [];
+        // エラーが出ていても止めず全部のエラーを集めて一括で表示するために配列にしておく
+        // throwだとエラーが出たときに止まっちゃうから細かい行エラーを出せない
         const parseErrors = [];
 
         for (let i = 0; i < rows.length; i++) {
+          // TODO: どうしてrowIndex求めるときに＋2をするの？
           const { product, error } = parseRow(rows[i], i + 2); // +2: ヘッダー行 + 0-indexed
+          // ? エラーの処理をif文でやってそれに当てはまらなかったらproductが返る👉️errorがtruthyか確認したほうが早い？
           if (error) {
             parseErrors.push(error);
           } else {
             newProducts.push(product);
           }
         }
-
         if (parseErrors.length > 0) {
+          // エラーは配列としてsetErrorsにセットする
           setErrors(parseErrors);
           setSuccessMessage("");
+          // 早期リターンで、キャッチには入らないだろう
           return;
         }
 
         // TODO: 商品のstateを書き換える処理
         // バリデーション成功→商品を追加
+        // スプレッド構文ですでに登録されている商品と、newProductsの配列を展開してくっつける
         onProductsChange([...products, ...newProducts]);
+        // 初期値配列ならエラーも空配列
         setErrors([]);
         setSuccessMessage(
           `${newProducts.length} product(s) imported successfully!`,
         );
       } catch {
+        // 想定外なエラーがでたときだけここが動く
         setErrors(["Failed to read the file. Please check the file format."]);
         setSuccessMessage("");
       }
-
+      // fileInputRef.current.valueにはファイル名が入っていた「C:\fakepath\productsData (1).xlsx」
+      console.log("fileInputRef.current.value", fileInputRef.current.value);
       // TODO: fileInputRef.current.value = "";はよくでてくるらしいからチェック
       // ファイル入力をリセット（同じファイルを再選択可能にする）
+      // もうすでにファイルがあるならファイル名をリセット
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     };
-
+    // reader.onloadが終了したあとの処理。ロードして本体を読む
+    // FileReader()のメソッドを使用して、実データ（生バイナリ）をゲットする
+    // readAsArrayBuffer = 箱を開けて中身のバイト列を取り出す
     reader.readAsArrayBuffer(file);
   }
 
