@@ -148,6 +148,7 @@ export default function ImportProducts({ products, onProductsChange }) {
     const reader = new FileReader();
     // TODO: onloadメソッドって何？
     // TODO: readerは非同期だからawaitが必要なのでは？
+    // TODO: どうしてコールバック？関数の定義をしているだけ？readAsArrayBufferをするときにonloadを勝手につかって処理してくれる？
     // ファイルを読み込んだあとの処理を先に登録しておかないとファイル読み込みが早く終わった場合に間に合わなくなるらしい！
     reader.onload = (event) => {
       try {
@@ -204,7 +205,7 @@ export default function ImportProducts({ products, onProductsChange }) {
         // バリデーション成功→商品を追加
         // スプレッド構文ですでに登録されている商品と、newProductsの配列を展開してくっつける
         onProductsChange([...products, ...newProducts]);
-        // 初期値配列ならエラーも空配列
+        // TODO: 初期値配列ならエラーも空配列にするの？nullじゃだめなの？
         setErrors([]);
         setSuccessMessage(
           `${newProducts.length} product(s) imported successfully!`,
@@ -232,9 +233,13 @@ export default function ImportProducts({ products, onProductsChange }) {
   return (
     <>
       <div className="mb-3">
+        {/* TODO: ラベルはFormの中じゃなくてもform-labelとかつけられる？ */}
         <label htmlFor="import-file" className="form-label">
           Import from CSV / Excel
         </label>
+        {/* 選択したファイルを取得するためにref属性をつけておく */}
+        {/* accept属性で、選択できるファイルを指定できる */}
+        {/* handleFileChangeはonChange属性で、イベントが引数になる。イベントのターゲットのファイルを指定してファイルを取得する */}
         <input
           ref={fileInputRef}
           type="file"
@@ -244,11 +249,13 @@ export default function ImportProducts({ products, onProductsChange }) {
           className="form-control"
         />
         <div className="form-text">
+          {/* TODO: codeタグの色の指定はどこでされている？ */}
           Columns: <code>category</code>, <code>name</code>, <code>price</code>,{" "}
           <code>stocked</code>
         </div>
       </div>
-
+      {/* successMessageが空文字なら空文字が返る、文字列が入っていたら<div>が返る */}
+      {/* TODO: successMessageが空文字ならnullを返すのはよくないのかしら？ */}
       {successMessage && (
         <div className="alert alert-success" role="alert">
           {successMessage}
@@ -258,8 +265,11 @@ export default function ImportProducts({ products, onProductsChange }) {
       {errors.length > 0 && (
         <div className="alert alert-danger" role="alert">
           <strong>Import errors:</strong>
+          {/* ul要素に自動でつく余白を消すためにmb-0をしている */}
           <ul className="mb-0 mt-1">
+            {/* mapは第1引数に値、第2引数にインデックスをもてる */}
             {errors.map((err, i) => (
+              // TODO: どうしてkeyが必要なの？li要素が重複しないようにするため？id属性じゃだめ？
               <li key={i}>{err}</li>
             ))}
           </ul>

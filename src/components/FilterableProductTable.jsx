@@ -354,6 +354,7 @@ export default function FilterableProductTable() {
       <div className="mb-4 card">
         <div className="card-body">
           <h3 className="card-title mb-3">Import products</h3>
+          {/* productsを更新する処理を渡して、ファイルimportしてその商品をテーブルに追加することが可能 */}
           <ImportProducts products={products} onProductsChange={setProducts} />
         </div>
       </div>
