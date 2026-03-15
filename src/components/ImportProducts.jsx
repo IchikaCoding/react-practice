@@ -19,15 +19,15 @@ function parseRow(row, rowIndex) {
   // categoryを文字列にしつつ、スペースを削除
   const category = String(row.category ?? "").trim();
   const name = String(row.name ?? "").trim();
-  // TODO: どうしてNumberにしないの？
-  // 変数のRawは仮のデータとして保存していることをわかりやすくするため？
+  // 一旦入力から来たそのままの値を取得してからNumberで変換する（2段階にしておく）
+  // 変数のRawは仮のデータとして保存していることをわかりやすくするため
   const priceRaw = row.price;
   const stockedRaw = row.stocked;
 
   // カテゴリのチェック
   // categoryにVALID_CATEGORIES配列に含まれないカテゴリが入っていたらエラー
   if (!VALID_CATEGORIES.includes(category)) {
-    // TODO: エラーとproductをプロパティにしてエラーならproduct側をnullにするのってよくやるやり方？
+    // エラーとproductをプロパティにしてエラーならproduct側をnullにするのは、インポート処理とかで1行ずつチェックしたいときによく使われる
     return {
       product: null,
       // rowIndexは引数でもらう。VALID_CATEGORIESの配列から,とスペース区切りでくっつけた有効なカテゴリを示す。
@@ -44,9 +44,7 @@ function parseRow(row, rowIndex) {
   }
 
   // 価格のチェック
-  // TODO: priceRawを数値に変える👉️数値にならなかった場合はどういうものが入っているの？
   const price = Number(priceRaw);
-  // TODO: ここの数値はどんな値が入っているのか確認する
   console.log("price", price);
   // 「有限数じゃないときとか、NaNとかInfinityのとき」か、priceが1未満、10万以上ならエラー
   if (!Number.isFinite(price) || price < 1 || price > 100000) {
