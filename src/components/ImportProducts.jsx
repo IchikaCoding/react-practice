@@ -233,7 +233,8 @@ export default function ImportProducts({ products, onProductsChange }) {
   return (
     <>
       <div className="mb-3">
-        {/* TODO: ラベルはFormの中じゃなくてもform-labelとかつけられる？ */}
+        {/* ラベルはFormの中じゃなくてもform-label */}
+        {/* label要素のhtmlForとinputのid属性を一致させるとラベルをクリックしてinputが選ばれる */}
         <label htmlFor="import-file" className="form-label">
           Import from CSV / Excel
         </label>
@@ -249,13 +250,15 @@ export default function ImportProducts({ products, onProductsChange }) {
           className="form-control"
         />
         <div className="form-text">
-          {/* TODO: codeタグの色の指定はどこでされている？ */}
+          {/* codeタグの色の指定はBootstrapでした--bs-code-color */}
           Columns: <code>category</code>, <code>name</code>, <code>price</code>,{" "}
           <code>stocked</code>
         </div>
       </div>
-      {/* successMessageが空文字なら空文字が返る、文字列が入っていたら<div>が返る */}
-      {/* TODO: successMessageが空文字ならnullを返すのはよくないのかしら？ */}
+      {/* successMessageが空文字なら空文字が返る（Reactはfalsyな値（0は含まない）は画面に出さない値になる）。
+      successMessageに0が入っていた場合、falsyではあるけど0が画面に出る
+      文字列が入っていたら<div>が返る */}
+      {/* successMessageが空文字ならnullを返すという三項演算子でもOK */}
       {successMessage && (
         <div className="alert alert-success" role="alert">
           {successMessage}
@@ -269,7 +272,9 @@ export default function ImportProducts({ products, onProductsChange }) {
           <ul className="mb-0 mt-1">
             {/* mapは第1引数に値、第2引数にインデックスをもてる */}
             {errors.map((err, i) => (
-              // TODO: どうしてkeyが必要なの？li要素が重複しないようにするため？id属性じゃだめ？
+              // key属性とは？React専用の目印。Reactが前回と今回で、どのliが同じ“データ”かを判別するために使う。DOMには出ないからCSSで指定するとかは出来ない
+              // id属性はブラウザ側が使う目印で、HTMLの属性👉️CSSで使用するため？getElementByIDは要素取得のためだけにID属性つけるよね？
+              // 並び順が変わる可能性があるなら、indexよりIDとかを使う方が良いらしい
               <li key={i}>{err}</li>
             ))}
           </ul>
