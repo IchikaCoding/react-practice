@@ -158,7 +158,7 @@ export default function FilterableProductTable() {
   }
   /**
    * 削除ボタンを押してモーダルが開く処理
-   * @param {*} deleteBtnId
+   * @param {string | null} deleteBtnId
    */
   function handleDeleteButton(deleteBtnId) {
     // delete押す直前にフォーカスが当たっているHTML要素を代入してそれを保存しておく

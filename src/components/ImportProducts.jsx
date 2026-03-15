@@ -101,7 +101,7 @@ function parseRow(row, rowIndex) {
  * @returns {JSX.Element}
  */
 export default function ImportProducts({ products, onProductsChange }) {
-  // TODO: 空の配列で初期化？エラーは配列で管理するとやりやすいのかしら？
+  // 空の配列で初期化するとerrors.lengthとかが最初から使えるので安心！null だと、配列メソッドを使ったときにエラーになりやすいから注意！
   // このコンポーネント内で表示非表示を管理するから、ここでstateを宣言している
   // stateにしてエラーと成功したときのメッセージを表示できるようにしている
   const [errors, setErrors] = useState([]);
@@ -111,36 +111,37 @@ export default function ImportProducts({ products, onProductsChange }) {
 
   /**
    * ファイルが選択されたときの処理
-   * TODO: Reactのイベントってなに？JSと同じ？
+   * ReactのイベントとJSのイベントの違いは？👉️onChange などで受け取る SyntheticEvent（合成イベント）。JSのイベントはaddEventListenerで受け取る Event
    * HTMLInputElementから、Input要素のイベントの型ですよという説明書き
    * @param {React.ChangeEvent<HTMLInputElement>} e ブラウザのイベントみたいな感じで使える。ブラウザ差を吸収して、どの環境でも同じ書き方にしてくれるらしい。
    */
   function handleFileChange(e) {
     console.log("e", e);
     console.log("e.target.files", e.target.files);
-    // TODO: どうしてイベントにファイルが入っているの？
     // input要素自体がfile型を指定されているから、自分でもファイルを指定しているから？
-    // TODO: 複数ファイルを選択できるようにするには👉️multiple 属性を input 要素に付けると複数可能になる
+    // 複数ファイルを選択できるようにするには👉️multiple 属性を input 要素に付けると複数可能になる
     // 0は1つ目のファイルにアクセスするの意味
     // FileListに入っているのはメソッドたち？
     // fileはファイルのメタ情報が入っているけど、ファイル本文を読むには非同期処理でFileReaderを使用する
     const file = e.target.files?.[0];
-    // TODO: どういうときに早期リターンするの？
+    // どういうときに早期リターンするの？👉️外からデータをインポートしているから一旦確認する
     if (!file) return;
     // これを実行するためにimportをする
     console.log("file", file);
     // ーーーーーー↑2026-03-12ここまでーーーーーー
     // 拡張子チェック
     // fileは配列？ドットの位置で区切って配列として返す👉️popで最後の拡張子の部分があるなら小文字にして返す
-    // TODO: splitで?.をやらないのは、拡張子があるという前提で考えているから
+    // ! splitで?.をやらないのは、文字列なら.がなくてもそのままの文字列が必ず返ってくるから。
+    // file.name.split(".")で空の配列になった場合、pop()でundefinedになる→それを防ぐために?.を使う
     const ext = file.name.split(".").pop()?.toLowerCase();
     // もし拡張子が"csv", "xlsx", "xls"でもなかったらエラーを返す
     if (!["csv", "xlsx", "xls"].includes(ext)) {
       setErrors(["Please select a CSV or Excel (.xlsx, .xls) file."]);
-      // TODO: nullじゃないのはどうして？nullのときと空文字のときの使い分けがわからない。
+      // nullじゃないのは、基本は後からセットするメッセージの型に揃えたいから
       setSuccessMessage("");
       return;
     }
+    // ーーーーー2026-03-15（ここまで）ーーーーーー
     // TODO: xlsxの処理はここから読む
     // FileReaderオブジェクトを使用するとファイルを非同期に読み取ることができます
     const reader = new FileReader();
@@ -150,6 +151,7 @@ export default function ImportProducts({ products, onProductsChange }) {
     // ファイルを読み込んだあとの処理を先に登録しておかないとファイル読み込みが早く終わった場合に間に合わなくなるらしい！
     reader.onload = (event) => {
       try {
+        // TODO: event.target.resultが取得出来ているのかを確認してエラー出す処理があってもいいかも
         // event.target.resultは、多分ファイルの元データ
         console.log("event.target.result", event.target.result);
         // Uint8Arrayはなに？「5452バイトのデータを、1バイトずつ見える形にしたビュー」
