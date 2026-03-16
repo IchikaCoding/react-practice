@@ -8,7 +8,7 @@ import { read, utils } from "xlsx";
 // CSVやExcelで使えるカテゴリの一覧
 const VALID_CATEGORIES = ["Fruits", "Vegetables", "Snacks"];
 
-// TODO: ここの関数からデータの変換とエラー処理を学ぶ
+// ここの関数からデータの変換とエラー処理を学ぶ
 /**
  * 1行分のデータをバリデーションして、Productオブジェクトに変換する
  * @param {Object} row - ファイルから読み取った1行分のデータ
@@ -45,7 +45,6 @@ function parseRow(row, rowIndex) {
 
   // 価格のチェック
   const price = Number(priceRaw);
-  console.log("price", price);
   // 「有限数じゃないときとか、NaNとかInfinityのとき」か、priceが1未満、10万以上ならエラー
   if (!Number.isFinite(price) || price < 1 || price > 100000) {
     return {
@@ -92,7 +91,7 @@ function parseRow(row, rowIndex) {
   };
 }
 
-// TODO: errors / successMessageで画面表示を切り替える処理を確認する
+// errors / successMessageで画面表示を切り替える処理を確認する
 /**
  * CSV/Excelファイルから商品データをインポートするコンポーネント
  * @param {Object} props
@@ -106,7 +105,11 @@ export default function ImportProducts({ products, onProductsChange }) {
   // stateにしてエラーと成功したときのメッセージを表示できるようにしている
   const [errors, setErrors] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
-  // ファイルを選択するためのinput要素
+
+  /**
+   * input要素から取得するRef
+   * @type {import("react").RefObject<HTMLInputElement | null>}
+   */
   const fileInputRef = useRef(null);
 
   /**
@@ -116,8 +119,6 @@ export default function ImportProducts({ products, onProductsChange }) {
    * @param {React.ChangeEvent<HTMLInputElement>} e ブラウザのイベントみたいな感じで使える。ブラウザ差を吸収して、どの環境でも同じ書き方にしてくれるらしい。
    */
   function handleFileChange(e) {
-    console.log("e", e);
-    console.log("e.target.files", e.target.files);
     // input要素自体がfile型を指定されているから、自分でもファイルを指定しているから？
     // 複数ファイルを選択できるようにするには👉️multiple 属性を input 要素に付けると複数可能になる
     // 0は1つ目のファイルにアクセスするの意味
@@ -126,9 +127,6 @@ export default function ImportProducts({ products, onProductsChange }) {
     const file = e.target.files?.[0];
     // どういうときに早期リターンするの？👉️外からデータをインポートしているから一旦確認する
     if (!file) return;
-    // これを実行するためにimportをする
-    console.log("file", file);
-    // ーーーーーー↑2026-03-12ここまでーーーーーー
     // 拡張子チェック
     // fileは配列？ドットの位置で区切って配列として返す👉️popで最後の拡張子の部分があるなら小文字にして返す
     // ! splitで?.をやらないのは、文字列なら.がなくてもそのままの文字列が必ず返ってくるから。
@@ -141,26 +139,25 @@ export default function ImportProducts({ products, onProductsChange }) {
       setSuccessMessage("");
       return;
     }
-    // ーーーーー2026-03-15（ここまで）ーーーーーー
-    // TODO: xlsxの処理はここから読む
+
+    // xlsxの処理はここから読む
     // FileReaderオブジェクトを使用するとファイルを非同期に読み取ることができます
     const reader = new FileReader();
-    // TODO: onloadメソッドって何？
-    // TODO: readerは非同期だからawaitが必要なのでは？
-    // TODO: どうしてコールバック？関数の定義をしているだけ？readAsArrayBufferをするときにonloadを勝手につかって処理してくれる？
+    // onloadメソッドって何？👉️fileを読み込む方法を登録する処理
+    // readerは非同期だからawaitが必要なのでは？👉️FileReader()は古いAPIだから、Promiseを返さない👉️awaitは不要で、成功したときの処理はonloadでセットしておく
+    // どうしてコールバック？関数の定義をしているだけ？readAsArrayBufferをするときにonloadを勝手につかって処理してくれる
     // ファイルを読み込んだあとの処理を先に登録しておかないとファイル読み込みが早く終わった場合に間に合わなくなるらしい！
     reader.onload = (event) => {
       try {
-        // TODO: event.target.resultが取得出来ているのかを確認してエラー出す処理があってもいいかも
-        // event.target.resultは、多分ファイルの元データ
+        // TODO: event.target.resultが取得出来ているのかを確認してエラー出す処理があってもいいかも？reader.onerrorでもOK
+        // event.target.resultは、ArrayBuffer(5461)（生データの入れ物）
         console.log("event.target.result", event.target.result);
-        // Uint8Arrayはなに？「5452バイトのデータを、1バイトずつ見える形にしたビュー」
+        // Uint8Arrayはなに？「5452バイトのデータを、1バイトずつ0〜255の数字」で見えるようにしたもの。バイナリを数値表示しただけのビュー」
         const data = new Uint8Array(event.target.result);
         // dataには配列の中に数字の羅列があった
         console.log("data", data);
         // xlsxのライブラリのreadメソッドです
         // TODO: dataを配列型で読むよ、と意味かどうかを確認する
-
         const workbook = read(data, { type: "array" });
         console.log("workbook", workbook);
         // 最初のシートを取得
@@ -177,16 +174,17 @@ export default function ImportProducts({ products, onProductsChange }) {
           return;
         }
 
-        // TODO: 一つでもエラーがあったら追加しない安全なデータ取り込みを学ぶ
+        // 一つでもエラーがあったら追加しない安全なデータ取り込みを学ぶ
         const newProducts = [];
         // エラーが出ていても止めず全部のエラーを集めて一括で表示するために配列にしておく
         // throwだとエラーが出たときに止まっちゃうから細かい行エラーを出せない
         const parseErrors = [];
 
         for (let i = 0; i < rows.length; i++) {
-          // TODO: どうしてrowIndex求めるときに＋2をするの？
+          // どうしてrowIndex求めるときに＋2をするの？
+          // →rows配列はインデックスが0スタート。Excel側では1行目がヘッダー。2行目から商品が入る。Excelと同じ行番号をいれるためには+2が必要
           const { product, error } = parseRow(rows[i], i + 2); // +2: ヘッダー行 + 0-indexed
-          // ? エラーの処理をif文でやってそれに当てはまらなかったらproductが返る👉️errorがtruthyか確認したほうが早い？
+          // エラーの処理を先にやるほうが読みやすいらしい
           if (error) {
             parseErrors.push(error);
           } else {
@@ -197,15 +195,14 @@ export default function ImportProducts({ products, onProductsChange }) {
           // エラーは配列としてsetErrorsにセットする
           setErrors(parseErrors);
           setSuccessMessage("");
-          // 早期リターンで、キャッチには入らないだろう
+          // 早期リターンしたらキャッチには入らないよ
           return;
         }
 
-        // TODO: 商品のstateを書き換える処理
+        // 商品のstateを書き換える処理
         // バリデーション成功→商品を追加
         // スプレッド構文ですでに登録されている商品と、newProductsの配列を展開してくっつける
         onProductsChange([...products, ...newProducts]);
-        // TODO: 初期値配列ならエラーも空配列にするの？nullじゃだめなの？
         setErrors([]);
         setSuccessMessage(
           `${newProducts.length} product(s) imported successfully!`,
@@ -217,16 +214,22 @@ export default function ImportProducts({ products, onProductsChange }) {
       }
       // fileInputRef.current.valueにはファイル名が入っていた「C:\fakepath\productsData (1).xlsx」
       console.log("fileInputRef.current.value", fileInputRef.current.value);
-      // TODO: fileInputRef.current.value = "";はよくでてくるらしいからチェック
+      // ! fileInputRef.current.value = "";はよくでてくるらしいからチェック
       // ファイル入力をリセット（同じファイルを再選択可能にする）
-      // もうすでにファイルがあるならファイル名をリセット
+      // リセットすると、onChange が発火しやすくなる
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     };
-    // reader.onloadが終了したあとの処理。ロードして本体を読む
-    // FileReader()のメソッドを使用して、実データ（生バイナリ）をゲットする
-    // readAsArrayBuffer = 箱を開けて中身のバイト列を取り出す
+
+    // FileReader()のメソッドを使用して、実データ（生バイナリ）をゲットする👉️これはonloadの機能？
+    // readAsArrayBuffer = 箱を開けて中身のバイト列を取り出す👉️これなら変数に代入していないからバイト列を取り出すのは嘘？
+    // これはファイルを読み込むという合図なだけ？これをやって成功したらオンロードが実行されるってこと？
+
+    // readAsArrayBufferで「読み込み開始の合図」
+    // 読み込みが成功すると、あとで reader.onload に登録した関数が自動で呼ばれる
+    // 読み込んだ結果のデータ本体は event.target.result に入る（実データ（生バイナリ））
+    // 失敗時は reader.onerrorに登録されている処理を実行する
     reader.readAsArrayBuffer(file);
   }
 
