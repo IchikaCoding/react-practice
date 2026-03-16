@@ -151,15 +151,13 @@ export default function ImportProducts({ products, onProductsChange }) {
       try {
         // TODO: event.target.resultが取得出来ているのかを確認してエラー出す処理があってもいいかも？reader.onerrorでもOK
         // event.target.resultは、ArrayBuffer(5461)（生データの入れ物）
-        console.log("event.target.result", event.target.result);
         // Uint8Arrayはなに？「5452バイトのデータを、1バイトずつ0〜255の数字」で見えるようにしたもの。バイナリを数値表示しただけのビュー」
-        const data = new Uint8Array(event.target.result);
         // dataには配列の中に数字の羅列があった
-        console.log("data", data);
+        const data = new Uint8Array(event.target.result);
+
         // xlsxのライブラリのreadメソッドです
         // TODO: dataを配列型で読むよ、と意味かどうかを確認する
         const workbook = read(data, { type: "array" });
-        console.log("workbook", workbook);
         // 最初のシートを取得
         const sheetName = workbook.SheetNames[0];
         // workbook のSheetsというプロパティにセルのデータが入っていた
@@ -167,7 +165,6 @@ export default function ImportProducts({ products, onProductsChange }) {
         // -------------ここまで2026-03-13----------------
         // シートをJSON配列に変換（ヘッダー行をキーとして使う）
         const rows = utils.sheet_to_json(sheet);
-        console.log("rows", rows);
         if (rows.length === 0) {
           setErrors(["The file is empty or has no data rows."]);
           setSuccessMessage("");
@@ -213,7 +210,6 @@ export default function ImportProducts({ products, onProductsChange }) {
         setSuccessMessage("");
       }
       // fileInputRef.current.valueにはファイル名が入っていた「C:\fakepath\productsData (1).xlsx」
-      console.log("fileInputRef.current.value", fileInputRef.current.value);
       // ! fileInputRef.current.value = "";はよくでてくるらしいからチェック
       // ファイル入力をリセット（同じファイルを再選択可能にする）
       // リセットすると、onChange が発火しやすくなる
