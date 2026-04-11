@@ -85,6 +85,7 @@ export default function ProductTable({
         // ! 更新を速く・正しくするためにkeyが必要
         // propsとしてカテゴリを渡している
         // TODO: どうしてKeyを渡しているのに，ProductCategoryRow componentでは使用していないのはどうして？
+        // key は React の特別なprops→リスト要素を識別するためだけに使っている。子では受け取れない
         // product.categoryは文字列
         // Props全体は{ category: "Fruits" }になる！→子componentでは，引数がオブジェクトになる！
         <ProductCategoryRow
