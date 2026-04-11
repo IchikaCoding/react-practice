@@ -77,12 +77,16 @@ export default function ProductTable({
       return;
     }
 
+    // lastCategoryがカテゴリーの文字列
     if (product.category !== lastCategory) {
       // カテゴリーが変わったことを判定するための条件分岐
       rows.push(
         // カテゴリが変わったら、カテゴリ表示のためのコンポーネントを追加する
         // ! 更新を速く・正しくするためにkeyが必要
         // propsとしてカテゴリを渡している
+        // TODO: どうしてKeyを渡しているのに，ProductCategoryRow componentでは使用していないのはどうして？
+        // product.categoryは文字列
+        // Props全体は{ category: "Fruits" }になる！→子componentでは，引数がオブジェクトになる！
         <ProductCategoryRow
           category={product.category}
           key={product.category}
