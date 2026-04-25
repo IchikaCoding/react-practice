@@ -153,6 +153,7 @@ export default function ImportProducts({ products, onProductsChange }) {
         // event.target.resultは、ArrayBuffer(5461)（生データの入れ物）
         // Uint8Arrayはなに？「5452バイトのデータを、1バイトずつ0〜255の数字」で見えるようにしたもの。バイナリを数値表示しただけのビュー」
         // dataには配列の中に数字の羅列があった
+        console.log("event.target.result:", event.target.result);
         const data = new Uint8Array(event.target.result);
 
         // xlsxのライブラリのreadメソッドです
