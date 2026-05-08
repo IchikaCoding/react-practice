@@ -218,8 +218,20 @@ export default function FilterableProductTable() {
   function handleModalCancelBtn() {
     setIsModalOpen(false);
     setDeleteBtnId(null);
-    lastFocusedRef.current?.focus();
+    // 上記のset○○でstateを更新するとdocument.activeElementが解除されるからか、次のコードが効果がない可能性がある。
+    // lastFocusedRef.current?.focus();
   }
+
+  // モーダルが閉じたときに前回フォーカスが当たっていた要素にフォーカスを当てる
+  function handleModalClosed() {
+    if (!isModalOpen && lastFocusedRef.current) {
+      lastFocusedRef.current.focus();
+      lastFocusedRef.current.classList.add("focus-ring", "focus-ring-danger");
+    }
+  }
+  // useEffectに無名関数を渡すよりも、名前をつけた関数を渡したほうが処理が想像しやすいよ！
+  useEffect(handleModalClosed, [isModalOpen]);
+
   // 画面表示の配列を作成する関数を作成する
   // categoryでフィルターしたProductsたちを返す
   // 引数は汎用関数にしたいから、FilterableProductTable.jsx内でstateとして宣言されているものは引数にしておく
